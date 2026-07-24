@@ -265,7 +265,8 @@ main {
   margin-bottom: 2.4rem;
 }
 .btn--full-exp {
-  margin-top: 2.8rem;
+  display: inline-block;
+  margin-top: 3rem;
 }
 .btn--primary {
   background: var(--accent);
