@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experience — Ng Guo Xiang</title>
+  <meta name="description" content="Full role-by-role experience for Ng Guo Xiang — Senior AWS Cloud Architect &amp; AI Platform Engineer." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="nav__brand" href="index.html#top">guoxlostinthecloud</a>
+      <ul class="nav__links">
+        <li><a href="index.html#experience">← Back</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="clouds" aria-hidden="true">
+    <span class="clouds__wisp clouds__wisp--1"></span>
+    <span class="clouds__wisp clouds__wisp--2"></span>
+    <span class="clouds__wisp clouds__wisp--3"></span>
+  </div>
+
+  <main id="top">
+    <section class="section" style="border-top: none; padding-top: clamp(3rem, 8vw, 5rem);">
+      <h1 class="section__title">Experience</h1>
+      <div class="timeline">
+
+        <article class="role">
+          <div class="role__head">
+            <h3 class="role__title">Senior AI Platform Engineer</h3>
+            <p class="role__meta"><span class="role__org">NCS Group</span><span class="role__dates">Jan 2026 – Present</span></p>
+          </div>
+          <ul class="role__points">
+            <li>Administer the OCP (Kubernetes) cluster configuration layer — namespace isolation, network segmentation, pod security enforcement, and Helm chart management, all through ArgoCD.</li>
+            <li>Designed and implemented a multi-wave (0–10) ArgoCD App-of-Apps GitOps bootstrap with dependency-aware sync sequencing across 4 environments, covering namespace bootstrap, OCP operators, platform service apps, and tenant AI agents.</li>
+            <li>Deployed LLM model-serving infrastructure with vLLM on NVIDIA H200 (141GB HBM3e) via RHOAI KServe InferenceService; configured MIG (Multi-Instance GPU) partitioning for multi-tenant GPU sharing.</li>
+            <li>Designed and deployed a distributed OSS observability stack (Grafana + Loki + Mimir + Tempo) with Keycloak OIDC multi-tenancy (org-per-tenant model); OpenTelemetry Collector sidecar auto-injected into all agent pods for end-to-end distributed tracing, metrics, and log correlation.</li>
+            <li>Deployed Langfuse OSS (LLM observability, cost tracking, evals) with Keycloak OIDC multi-tenancy and a custom Python RBAC provisioner syncing Keycloak groups → Langfuse orgs.</li>
+            <li>Operated F5 AI Guardrails (CalypsoAI) OpenShift SecurityOperator.</li>
+          </ul>
+        </article>
+
+        <article class="role">
+          <div class="role__head">
+            <h3 class="role__title">Senior IT / Cloud Architect</h3>
+            <p class="role__meta"><span class="role__org">NCS Group</span><span class="role__dates">Jun 2024 – Dec 2025</span></p>
+          </div>
+          <ul class="role__points">
+            <li>Led concurrent AWS implementations for a Defence client (confidential), wearing multiple hats across technical architecture, engineering, project timeline planning, and resource/manpower management and reporting.</li>
+            <li>Provided presales solutioning support and advisory for 5+ deals, including an Azure Sovereign Private Cloud.</li>
+            <li>Consulting and POC engagements for other clients — Redis Enterprise for a bank, AWS landing zone for NCS IT.</li>
+            <li>Provided mentorship to engineers; assisted with hiring and other internal initiatives.</li>
+            <li>Gained new exposure to AWS IoT services, Splunk, Dynatrace, HashiCorp Nomad + Consul, IIS, Tripwire, Talend, Qliksense, and Cloudera.</li>
+          </ul>
+        </article>
+
+        <article class="role">
+          <div class="role__head">
+            <h3 class="role__title">Cloud Technical Architect / Lead</h3>
+            <p class="role__meta"><span class="role__org">NCS Group</span><span class="role__dates">Sep 2022 – Jun 2024</span></p>
+          </div>
+          <ul class="role__points">
+            <li>Led day-1 cloud architecture and infrastructure delivery, leading teams of 4–5 cloud engineers (onshore and offshore).</li>
+          </ul>
+
+          <p class="role__delivery">AWS Landing Zone — financial services company</p>
+          <ul class="role__points role__points--nested">
+            <li>Enterprise multi-account AWS environment with hybrid networking, centralized security, and governance frameworks.</li>
+            <li>Technical solutioning covering AWS Control Tower landing-zone baseline, cloud security, hybrid (to on-prem) networking, shared services and systems administration, logging and monitoring, CI/CD, and application infrastructure.</li>
+            <li>Implemented infrastructure IaC and CI/CD with Terraform and native AWS CI/CD services (CodeBuild, CodePipeline).</li>
+            <li>Implemented AWS security &amp; governance services — IAM Identity Center (SSO) with Active Directory federation, Web Application Firewall, AWS Network Firewall.</li>
+            <li>Supported cyber teams implementing CyberArk Privileged Access Management, Tenable Vulnerability Management, Trend Micro Deep Security, Microsoft Certificate Authority, and Fortigate Firewall.</li>
+            <li>Hybrid cloud IP planning, Direct Connect &amp; site-to-site VPN, static and BGP routing, certificate deployments, and DNS implementation.</li>
+            <li>Linux and Windows systems administration (Active Directory, hardening, patching, automation) via AWS EC2 Image Builder, SSM, and Patch Manager.</li>
+            <li>Implemented native centralized logging and monitoring on AWS.</li>
+          </ul>
+
+          <p class="role__delivery">Networked Trade Platform 2.0 — Singapore Government Agency</p>
+          <ul class="role__points role__points--nested">
+            <li>NCS's first GCC 2.0 AWS project — cloud-native architecture with many managed services and containerization (both EKS and ECS on Fargate).</li>
+            <li>Provisioned Gov-compliant AWS resources with Gov-compliant design patterns via Terraform, across the networking layer, VPC resources, and managed services.</li>
+            <li>Supported multiple teams for cyber, management, and application workload setup.</li>
+            <li>EC2 systems administration (AD, patching, hardening) and GitLab Infrastructure-as-Code.</li>
+          </ul>
+        </article>
+
+        <article class="role">
+          <div class="role__head">
+            <h3 class="role__title">Cloud Architect &amp; System Engineer — DBS Bank</h3>
+            <p class="role__meta"><span class="role__org">NCS Group</span><span class="role__dates">Jul 2020 – Aug 2022</span></p>
+          </div>
+          <ul class="role__points">
+            <li>Owned AWS cloud application infrastructure design — the point of contact for network architecture, security reviews, and system audits, provisioning resources through the Internal Developer Platform's Jinja-templated CloudFormation.</li>
+            <li>Monitored and supported test and production environments across multiple applications and AWS accounts, running change and release management end to end — versioning, deployments, health checks, and functional verification.</li>
+            <li>Drove config and security fine-tuning through load testing, chaos testing, infra compliance checks, and application security scanning with code-fix resolution.</li>
+            <li>Enabled other developers on AWS service integration via boto3 and the Java SDK, and automated infrastructure with CloudFormation, shell/AWS CLI, Jenkins pipelines, and Python.</li>
+            <li>Configured application middleware and third-party products — Apache, JBoss, Tomcat, Docker, Ephesoft OCR, ForgeRock — and maintained design and process documentation in Confluence.</li>
+            <li>Earned the client's trust on NCS's first AWS public-cloud project, resulting in contract extensions.</li>
+          </ul>
+
+          <p class="role__delivery">Carbon Credits Marketplace (Climate Impact X)</p>
+          <ul class="role__points role__points--nested">
+            <li>Initial bootstrap build for a joint venture outside DBS's internal network — an internet-facing backend settlement and registry system for carbon-credit transactions, with Cognito authentication, ECS Fargate microservices, and serverless API integrations.</li>
+            <li>Guided the application team on a User Access Management module using Amazon Cognito User Pools (OAuth2 with SMS 2FA), and on replatforming two existing systems to ECS Fargate with a containerized microservice architecture.</li>
+            <li>Built a serverless API interface layer with API Gateway + Lambda (Python) and DynamoDB for PGP encryption/decryption and internal routing to the microservices; implemented Lambda file handling with open-source ClamAV antivirus scanning for upload/download.</li>
+          </ul>
+
+          <p class="role__delivery">Enterprise IAM System</p>
+          <ul class="role__points role__points--nested">
+            <li>Large-scale ForgeRock implementation for internet-facing business customer login, compliant with MAS Auth requirements.</li>
+            <li>Scripted and performed ForgeRock Access Management Apache WebAgent installations and configuration for downstream systems (AWS and on-prem), and onboarded applications using OAuth2 with partner sites for redirection.</li>
+          </ul>
+
+          <p class="role__delivery">IMDA InvoiceNow (nationwide e-invoicing)</p>
+          <ul class="role__points role__points--nested">
+            <li>3-tier web app on AWS within DBS's Institutional Banking internet-facing app, IDEAL. On top of AWS infrastructure and middleware responsibilities, performed application L3 production support, bug fixes, and enhancements for the Java (Spring Boot) backend.</li>
+          </ul>
+
+          <p class="role__delivery">Healthcare Information Exchange</p>
+          <ul class="role__points role__points--nested">
+            <li>Ephesoft OCR-based insurance claims processing with containerized and serverless architecture (AWS ECS and Lambda) under strict PII compliance requirements; wrote scripts for an on-premise SFTP AIX server interfacing with the system on AWS.</li>
+          </ul>
+        </article>
+
+        <article class="role">
+          <div class="role__head">
+            <h3 class="role__title">IoT Product Manager · Management Associate</h3>
+            <p class="role__meta"><span class="role__org">Singtel</span><span class="role__dates">Jul 2019 – Jun 2020</span></p>
+          </div>
+          <ul class="role__points">
+            <li>Solution owner of Real-Time Location System (RTLS) and Video Analytics solutions.</li>
+            <li>Product management role focused on IoT solutions, vendor partnerships, and go-to-market strategies for enterprise clients.</li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Ng Guo Xiang · <a href="index.html#top">Back to portfolio</a></p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

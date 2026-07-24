@@ -195,7 +195,11 @@
 
     <!-- EXPERIENCE -->
     <section id="experience" class="section">
-      <h2 class="section__title">Experience</h2>
+      <h2 class="section__title">Summarized Experience</h2>
+      <p class="section__lead">
+        Headlines only — <a href="experience.html">see the full role-by-role experience ↗</a>
+        for every project and detail.
+      </p>
       <div class="timeline">
 
         <article class="role">
@@ -228,7 +232,7 @@
             <p class="role__meta"><span class="role__org">NCS Group</span><span class="role__dates">Sep 2022 – Jun 2024</span></p>
           </div>
           <ul class="role__points">
-            <li>Led day-1 cloud architecture and infrastructure delivery, managing teams of 4–5 cloud engineers (onshore and offshore).</li>
+            <li>Led day-1 cloud architecture and infrastructure delivery, leading teams of 4–5 cloud engineers (onshore and offshore).</li>
             <li>Delivered an enterprise <strong>AWS Landing Zone</strong> for a financial-services firm — Control Tower baseline, IAM Identity Center SSO, hybrid networking, WAF/Network Firewall, and Terraform IaC/CICD.</li>
             <li>Delivered <strong>Networked Trade Platform 2.0</strong> — NCS's first GCC 2.0 AWS project — a cloud-native, containerized (EKS / ECS Fargate) government-compliant platform provisioned via Terraform.</li>
           </ul>
@@ -240,7 +244,7 @@
             <p class="role__meta"><span class="role__org">NCS Group</span><span class="role__dates">Jul 2020 – Aug 2022</span></p>
           </div>
           <ul class="role__points">
-            <li>Delivered NCS's first AWS public-cloud project with DBS; earned the client MD's trust, leading to contract extensions.</li>
+            <li>Delivered NCS's first AWS public-cloud project with DBS; earned the client's trust, leading to contract extensions.</li>
             <li>Built the <strong>Carbon Credits Marketplace (Climate Impact X)</strong> backend — ECS Fargate microservices, Cognito auth (OAuth2 + SMS 2FA), and a serverless API-gateway/Lambda layer.</li>
             <li>Delivered a MAS-compliant enterprise ForgeRock IAM system and the IMDA <strong>InvoiceNow</strong> national e-invoicing application.</li>
           </ul>
@@ -257,6 +261,7 @@
         </article>
 
       </div>
+      <a class="btn btn--primary btn--full-exp" href="experience.html">See full experience →</a>
     </section>
 
     <!-- EDUCATION -->
@@ -350,12 +355,12 @@
         Each links out to where it lives.
       </p>
       <div class="cards">
-        <!-- TODO: replace these placeholders with real projects + links (Deng-Jing style: card → external app/repo). -->
-        <article class="card card--placeholder">
-          <h3 class="card__title">Project one</h3>
-          <p class="card__desc">A short one-line description of what it is and why it was fun to build.</p>
-          <span class="card__tag">Coming soon</span>
-        </article>
+        <!-- TODO: replace remaining placeholders with real projects + links (Deng-Jing style: card → external app/repo). -->
+        <a class="card" href="https://guoxiangng.github.io/hakigains/" target="_blank" rel="noopener">
+          <h3 class="card__title">hakigains</h3>
+          <p class="card__desc">A self-hosted AI training coach — reads Garmin recovery data, reasons against my goals, and sends one specific session a day over Telegram.</p>
+          <span class="card__tag">Self-hosted · AI + AWS</span>
+        </a>
         <article class="card card--placeholder">
           <h3 class="card__title">Project two</h3>
           <p class="card__desc">A short one-line description of what it is and why it was fun to build.</p>
@@ -374,9 +379,12 @@
       <h2 class="section__title">Writing</h2>
       <p class="section__lead">
         I write on Medium as <strong>@guoxlostinthecloud</strong> — field notes on cloud,
-        platform engineering, and the things I'm figuring out.
+        platform engineering, and the things I'm figuring out. Five most recent posts below.
       </p>
-      <a class="btn btn--primary" href="https://medium.com/@guoxlostinthecloud" target="_blank" rel="noopener">Read on Medium →</a>
+      <div id="medium-posts" class="medium-list" aria-live="polite">
+        <p class="section__lead">Loading recent posts…</p>
+      </div>
+      <a class="btn btn--primary" href="https://medium.com/@guoxlostinthecloud" target="_blank" rel="noopener">Read more on Medium →</a>
     </section>
 
     <!-- CONTACT -->
@@ -398,6 +406,46 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    (async function loadMediumPosts() {
+      const container = document.getElementById('medium-posts');
+      if (!container) return;
+
+      const feedUrl = 'https://medium.com/feed/@guoxlostinthecloud';
+      const apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl);
+
+      try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) throw new Error('Feed request failed');
+        const data = await res.json();
+        const items = (data.items || []).slice(0, 5);
+        if (!items.length) throw new Error('No posts found');
+
+        container.innerHTML = '';
+        items.forEach(function (item) {
+          const row = document.createElement('a');
+          row.className = 'medium-item';
+          row.href = item.link;
+          row.target = '_blank';
+          row.rel = 'noopener';
+
+          const title = document.createElement('span');
+          title.className = 'medium-item__title';
+          title.textContent = item.title;
+
+          const meta = document.createElement('span');
+          meta.className = 'medium-item__meta';
+          const date = new Date(item.pubDate);
+          meta.textContent = date.toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: 'numeric' });
+
+          row.appendChild(title);
+          row.appendChild(meta);
+          container.appendChild(row);
+        });
+      } catch (err) {
+        container.innerHTML = '<p class="section__lead">Couldn’t load recent posts right now — read on Medium directly below.</p>';
+      }
+    })();
   </script>
 </body>
 </html>

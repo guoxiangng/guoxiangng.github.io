@@ -167,7 +167,7 @@ main {
 
 /* ---------- Hero ----------------------------------------------------------- */
 .hero {
-  padding: clamp(4rem, 12vw, 8rem) 0 clamp(3rem, 8vw, 5rem);
+  padding: clamp(4rem, 12vw, 8rem) 0 clamp(0.5rem, 2vw, 1.5rem);
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
@@ -264,6 +264,9 @@ main {
   padding: 0.85rem 1.7rem;
   margin-bottom: 2.4rem;
 }
+.btn--full-exp {
+  margin-top: 2.8rem;
+}
 .btn--primary {
   background: var(--accent);
   border-color: var(--accent);
@@ -308,10 +311,13 @@ main {
   gap: var(--gap);
 }
 .card {
+  display: block;
   background: var(--paper-2);
   border: 1px solid var(--line-soft);
   border-radius: 14px;
   padding: 1.6rem 1.5rem;
+  text-decoration: none;
+  color: inherit;
   transition: transform 0.25s ease, border-color 0.25s ease;
 }
 .card:hover {
@@ -455,6 +461,22 @@ main {
 .role__points li { padding-left: 0.2rem; }
 .role__points li::marker { color: var(--accent); }
 
+.role__delivery {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0.4rem 0 0.5rem;
+}
+.role__points--nested {
+  padding-left: 1.1rem;
+  margin-left: 0.6rem;
+  border-left: 1px solid var(--line-soft);
+  font-size: 0.95rem;
+}
+
 /* ---------- Education ------------------------------------------------------ */
 .edu { display: grid; gap: 1.8rem; }
 .edu__item {
@@ -514,6 +536,42 @@ main {
   color: var(--ink-faint);
   font-weight: 400;
   letter-spacing: 0.02em;
+}
+
+/* ---------- Medium posts list ----------------------------------------------- */
+.medium-list {
+  display: grid;
+  border-top: 1px solid var(--line-soft);
+  margin-bottom: 2rem;
+}
+.medium-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1.5rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--line-soft);
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.medium-item:hover {
+  color: var(--accent-deep);
+  padding-left: 0.4rem;
+}
+.medium-item__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.12rem;
+  line-height: 1.4;
+}
+.medium-item__meta {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  white-space: nowrap;
 }
 
 /* ---------- Contact -------------------------------------------------------- */
