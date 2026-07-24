@@ -315,7 +315,7 @@ main {
   background: var(--paper-2);
   border: 1px solid var(--line-soft);
   border-radius: 14px;
-  padding: 1.6rem 1.5rem;
+  overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: transform 0.25s ease, border-color 0.25s ease;
@@ -324,6 +324,12 @@ main {
   transform: translateY(-3px);
   border-color: var(--accent);
 }
+.card__thumb {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  display: block;
+}
+.card__body { padding: 1.6rem 1.5rem; }
 .card__title {
   font-family: var(--font-display);
   font-weight: 400;
