@@ -1,6 +1,7 @@
 # guoxiangng.github.io
 
-Personal portfolio for Ng Guo Xiang — a plain static site (no build step), served by GitHub Pages.
+Personal portfolio for Ng Guo Xiang — a plain static site (no build step), served
+by GitHub Pages.
 
 ## Design
 
