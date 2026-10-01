@@ -247,10 +247,10 @@
         <div class="form">
           <div class="k">Random</div>
           <h3>Tap, get a meme</h3>
-          <p>Captions are generated in batches offline, one template at a time, then reviewed by
-          hand. Only approved ones are published. The button picks one in your browser, so there
-          is no model call, no backend and no cost per tap.</p>
-          <div class="role">static JSON → canvas</div>
+          <p>Captions are written in batches, one template at a time, then reviewed by hand.
+          Only approved ones are in the pool. The page loads the pool once and the button picks
+          from it in your browser, so there is no model call and no cost per tap.</p>
+          <div class="role">approved pool → canvas</div>
         </div>
         <div class="form">
           <div class="k">Prompt</div>
@@ -349,11 +349,12 @@
     <section>
       <div class="sec-head"><span class="eyebrow">Architecture</span><h2>A static page and one small function</h2></div>
       <div class="route">
-<pre><span class="g">Random</span>   browser ─► memes.json <span class="m">(approved bank, static)</span> ─► <span class="t">canvas</span>
+<pre><span class="g">Random</span>   browser ─► the approved pool <span class="m">(fetched once per visit, no model call)</span> ─► <span class="t">canvas</span>
 <span class="h">Prompt</span>   browser ─► Lambda Function URL ─► usage check ─► Claude Haiku on Bedrock
                          └─► {template_id, slots} ─► <span class="t">canvas</span>
 
 <span class="m">site</span>     GitHub Pages, built by a workflow from the repo
+<span class="m">pool</span>     DynamoDB — the live list of memes; the repo only holds a seed
 <span class="m">limits</span>   DynamoDB counters — per visitor per day, and one global per day
 <span class="m">brain</span>    Claude Haiku on Amazon Bedrock, behind a provider interface
 <span class="m">deploy</span>   AWS SAM · one zip Lambda · ap-southeast-1</pre>
@@ -367,16 +368,17 @@
         <div class="status-col done">
           <h3>Built</h3>
           <div class="status-item"><span class="mk">✓</span><span>Spec for the catalog, renderer, bank, prompt contract and limits</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Template catalog: 11 classic formats, validated</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Template catalog: 30 classic formats, each text box checked on the real image</span></div>
           <div class="status-item"><span class="mk">✓</span><span>Browser renderer with text fitting, covered by tests</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Live page: pick a template, type the text, download a PNG</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Deploy pipeline: tests, image check, GitHub Pages</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Random: a reviewed pool of 101 memes, served from DynamoDB</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Topic memes: Lambda, usage limits, Claude Haiku on Bedrock</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Deploy pipeline: tests, image check, GitHub Pages; AWS SAM for the API</span></div>
         </div>
         <div class="status-col next">
           <h3>Not yet</h3>
-          <div class="status-item"><span class="mk">○</span><span>Meme bank reviewed and published (Random)</span></div>
-          <div class="status-item"><span class="mk">○</span><span>Prompt function, limits and AWS deploy</span></div>
-          <div class="status-item"><span class="mk">○</span><span>Telegram bot as a second front end</span></div>
+          <div class="status-item"><span class="mk">○</span><span>Telegram bot: built on the same engine, not switched on yet</span></div>
+          <div class="status-item"><span class="mk">○</span><span>Scheduled generator that grows the pool, with an AI tone check</span></div>
+          <div class="status-item"><span class="mk">○</span><span>A Chinese edition</span></div>
         </div>
       </div>
     </section>
