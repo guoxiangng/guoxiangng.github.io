@@ -355,7 +355,6 @@
     <section id="projects" class="section">
       <h2 class="section__title">Fun Projects</h2>
       <div class="cards">
-        <!-- TODO: replace remaining placeholders with real projects + links (Deng-Jing style: card → external app/repo). -->
         <a class="card" href="/projects/hakigains.html">
           <svg class="card__thumb" viewBox="0 0 320 200" role="img" aria-label="hakigains wanted poster" preserveAspectRatio="xMidYMid slice">
             <rect width="320" height="200" fill="#0d2430"/>
@@ -434,13 +433,35 @@
             <span class="card__tag">kagent · EKS · GitOps · published series</span>
           </div>
         </a>
-        <article class="card card--placeholder">
+        <a class="card" href="/projects/dharmeme.html">
+          <svg class="card__thumb" viewBox="0 0 320 200" role="img" aria-label="dharmeme sample meme" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="dm-vign" cx="50%" cy="20%" r="90%">
+                <stop offset="0%" stop-color="#f3d9a8"/>
+                <stop offset="100%" stop-color="#d9903f"/>
+              </radialGradient>
+            </defs>
+            <rect width="320" height="200" fill="url(#dm-vign)"/>
+            <!-- lotus, same line-mark as the site hero -->
+            <g transform="translate(100,52) scale(1)" fill="none" stroke="#7a2e2a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.85">
+              <path d="M60 78 C60 52 60 30 60 14 C54 30 50 52 60 78 C66 52 62 30 60 14Z"/>
+              <path d="M60 78 C44 58 34 40 33 22 C42 34 54 54 60 78Z"/>
+              <path d="M60 78 C76 58 86 40 87 22 C78 34 66 54 60 78Z"/>
+              <path d="M60 78 C34 66 16 52 10 36 C26 44 48 60 60 78Z"/>
+              <path d="M60 78 C86 66 104 52 110 36 C94 44 72 60 60 78Z"/>
+            </g>
+            <!-- meme caption: white fill, black outline -->
+            <g font-family="Impact, 'Arial Black', sans-serif" font-size="21" text-anchor="middle" fill="#fff" stroke="#000" stroke-width="4" paint-order="stroke" stroke-linejoin="round" letter-spacing="0.5">
+              <text x="160" y="38">ALL MEMES</text>
+              <text x="160" y="176">ARE IMPERMANENT</text>
+            </g>
+          </svg>
           <div class="card__body">
-            <h3 class="card__title">Project three</h3>
-            <p class="card__desc">A short one-line description of what it is and why it was fun to build.</p>
-            <span class="card__tag">Coming soon</span>
+            <h3 class="card__title">dharmeme</h3>
+            <p class="card__desc">A Buddhist meme generator — tap for a random hand-reviewed meme, or give it a topic and an LLM picks the template and writes the caption. Built so the AI bill has a ceiling.</p>
+            <span class="card__tag">Live app · in progress · AI + AWS</span>
           </div>
-        </article>
+        </a>
       </div>
     </section>
 
