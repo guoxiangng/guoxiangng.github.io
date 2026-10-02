@@ -259,10 +259,10 @@
     </div>
 
     <div class="numbers">
-      <div class="num"><b>52</b><span>meme templates, each text box placed by hand</span></div>
-      <div class="num"><b>89</b><span>memes in the English pool, every one approved by a person</span></div>
+      <div class="num"><b>53</b><span>meme templates, each text box placed by hand</span></div>
+      <div class="num"><b>161</b><span>memes in the pools (129 English, 32 Chinese), each approved by a person</span></div>
       <div class="num"><b>44</b><span>themes to ask for: 24 English, 20 Chinese</span></div>
-      <div class="num"><b>105</b><span>automated tests, run on every push</span></div>
+      <div class="num"><b>106</b><span>automated tests, run on every push</span></div>
     </div>
 
     <!-- SEE IT -->
@@ -338,7 +338,7 @@
                 <img src="/images/dharmeme/chinese.jpg" width="640" height="533" loading="lazy"
                      alt="Monkey Puppet meme with a Simplified Chinese caption: the Dharma teacher has just finished saying not to gossip, and I walk out of the hall complaining to a fellow practitioner about the temple next door." />
               </div>
-              <div class="msg bot" style="font-size:11px;color:var(--tg-dim)">/chinesememe_tw 是繁體版</div>
+              <div class="msg bot" style="font-size:11px;color:var(--tg-dim)">/chineserandom 随机一张</div>
             </div>
           </div>
           <div class="phone-cap">Chinese, in either script</div>
@@ -552,7 +552,7 @@
       </table>
 
       <h3>Tests and deployment</h3>
-      <p>105 automated tests (91 Python, 14 JavaScript) cover the text fitting, the model's reply
+      <p>106 automated tests (92 Python, 14 JavaScript) cover the text fitting, the model's reply
       handling with a stubbed model, the limits, the votes, the bot, the generator and the Chinese
       rendering. Every push runs them; the site then builds and deploys by itself, and the build
       fails if a template image is missing or not the size its text boxes were placed on. The API
