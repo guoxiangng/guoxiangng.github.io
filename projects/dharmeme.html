@@ -4,11 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>dharmeme — case study | Ng Guo Xiang</title>
-<meta name="description" content="dharmeme: a Buddhist meme generator. Random memes from a hand-reviewed bank, or give it a topic and an LLM picks the template and writes the caption. Design decisions, architecture, and honest status." />
+<meta name="description" content="dharmeme: a Buddhist meme generator on the web and Telegram, in English and Chinese. A vetted pool, themed memes written by an LLM, votes that can't snowball, and an AI bill with a ceiling." />
 <meta property="og:title" content="dharmeme — case study" />
-<meta property="og:description" content="A Buddhist meme generator — why it's curated, how a meme is made, and how the AI bill stays capped." />
+<meta property="og:description" content="A Buddhist meme generator on the web and Telegram, in English and Chinese — what it does, why it's built this way, and how it works." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://guoxiangng.github.io/projects/dharmeme.html" />
+<meta property="og:image" content="https://guoxiangng.github.io/images/dharmeme/hero.jpg" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,19 +18,22 @@
   :root{
     --ground:#f6f1e7; --ground-2:#efe7d6; --panel:#fffaf0;
     --ink:#2b2620; --muted:#6f665a; --faint:#958a7a;
-    --saffron:#b5651d; --saffron-2:#8f4d12; --maroon:#7a2e2a; --lotus:#b0527a; --leaf:#4f7a52;
+    --saffron:#b5651d; --maroon:#7a2e2a; --lotus:#b0527a; --leaf:#4f7a52;
     --line:rgba(43,38,32,.20); --line-soft:rgba(43,38,32,.10);
     --shadow:0 20px 44px -26px rgba(74,54,24,.5);
     --meme:"Anton",Impact,"Arial Black",sans-serif;
     --display:"Georgia","Times New Roman",serif;
-    --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --body:system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
     --mono:"SFMono-Regular","Consolas","Liberation Mono",monospace;
+    /* Telegram mock-ups keep their own dark palette in both themes */
+    --tg-bg:#0e1621; --tg-head:#17212b; --tg-in:#182533; --tg-out:#2b5278;
+    --tg-key:#2a3a4b; --tg-text:#e7edf3; --tg-dim:#8a9bab; --tg-link:#6ab3f3;
   }
   @media (prefers-color-scheme:dark){
     :root{
       --ground:#1c1a17; --ground-2:#23201c; --panel:#26231f;
       --ink:#eee6d8; --muted:#a99e8d; --faint:#7f7566;
-      --saffron:#e0954f; --saffron-2:#f0b47a; --maroon:#d0766f; --lotus:#e08fb2; --leaf:#8fbf92;
+      --saffron:#e0954f; --maroon:#d0766f; --lotus:#e08fb2; --leaf:#8fbf92;
       --line:rgba(224,149,79,.26); --line-soft:rgba(238,230,216,.10);
       --shadow:0 24px 60px -28px rgba(0,0,0,.75);
     }
@@ -39,20 +43,21 @@
   body{margin:0;background:var(--ground)}
   .page{
     font-family:var(--body); color:var(--ink); background:
-      radial-gradient(110% 80% at 50% -10%, rgba(181,101,29,.12), transparent 55%),
+      radial-gradient(110% 60% at 50% -10%, rgba(181,101,29,.12), transparent 55%),
       var(--ground);
     line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden;
     padding:0 20px 70px;
   }
-  .wrap{max-width:960px;margin:0 auto}
+  .wrap{max-width:980px;margin:0 auto}
   .eyebrow{text-transform:uppercase;letter-spacing:.24em;font-size:11px;color:var(--saffron);font-weight:700}
   h2{font-family:var(--display);font-weight:700;letter-spacing:-.01em;text-wrap:balance;margin:0}
   a{color:var(--saffron)}
   .mono{font-family:var(--mono)}
+  img{max-width:100%;height:auto;display:block}
 
   /* ---------- top ribbon ---------- */
-  .ribbon{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;
-    align-items:center;gap:16px;padding:18px 20px;flex-wrap:wrap;background:var(--ground)}
+  .ribbon{max-width:980px;margin:0 auto;display:flex;justify-content:space-between;
+    align-items:center;gap:16px;padding:18px 20px;flex-wrap:wrap}
   .ribbon .brand{letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--muted)}
   .ribbon .links{display:flex;align-items:center;gap:18px;font-size:13px}
   .ribbon .links a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}
@@ -61,45 +66,85 @@
     border-radius:7px;font-weight:700}
 
   /* ---------- hero ---------- */
-  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center;padding:26px 0 8px}
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;padding:26px 0 8px}
   .wordmark{font-family:var(--meme);font-weight:400;font-size:clamp(46px,9vw,84px);
     letter-spacing:.01em;line-height:1;margin:0 0 6px}
   .wordmark .dh{color:var(--saffron)}
   .hero .strap{font-family:var(--display);font-style:italic;color:var(--muted);font-size:17px;margin:0 0 16px}
-  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(21px,3.4vw,28px);
+  .hero h1{font-family:var(--display);font-weight:700;font-size:clamp(21px,3.2vw,27px);
     letter-spacing:-.01em;line-height:1.25;margin:0 0 10px;text-wrap:balance}
   .hero p.intro{color:var(--muted);font-size:16.5px;margin:0;max-width:52ch}
   .hero-cta{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
   .btn{text-transform:uppercase;letter-spacing:.1em;font-size:11.5px;font-weight:700;
-    padding:11px 20px;border-radius:8px;text-decoration:none;border:1px solid var(--line)}
+    padding:11px 18px;border-radius:8px;text-decoration:none;border:1px solid var(--line)}
   .btn.primary{background:var(--saffron);color:var(--ground);border-color:var(--saffron)}
   .btn.ghost{color:var(--ink)}
-
-  /* ---------- sample meme (original art, drawn in CSS + SVG) ---------- */
-  .meme{background:var(--panel);border:1px solid var(--line);border-radius:10px;
-    box-shadow:var(--shadow);overflow:hidden;max-width:400px;margin:0 auto;width:100%}
-  .meme .row{display:grid;grid-template-columns:42% 58%;min-height:150px;border-bottom:1px solid var(--line)}
-  .meme .row:last-of-type{border-bottom:none}
-  .meme .pic{display:flex;align-items:center;justify-content:center;background:var(--ground-2);
-    border-right:1px solid var(--line)}
-  .meme .pic svg{width:74%;height:auto}
-  .meme .txt{display:flex;align-items:center;justify-content:center;text-align:center;
-    padding:14px 16px;font-family:var(--meme);font-size:21px;line-height:1.2;color:var(--ink)}
-  .meme-cap{text-align:center;font-size:11.5px;color:var(--faint);margin-top:10px;
+  .hero-meme{border-radius:10px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+  .cap{text-align:center;font-size:11.5px;color:var(--faint);margin-top:10px;
     text-transform:uppercase;letter-spacing:.1em}
 
+  .numbers{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:34px}
+  .num{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .num b{display:block;font-family:var(--meme);font-weight:400;font-size:30px;line-height:1.1;color:var(--saffron)}
+  .num span{font-size:12.5px;color:var(--muted)}
+
   /* ---------- section frame ---------- */
-  section{margin-top:62px}
+  section{margin-top:64px}
   .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;flex-wrap:wrap}
   .sec-head h2{font-size:clamp(21px,3.2vw,28px)}
-  .lede{color:var(--muted);max-width:66ch;margin:-6px 0 22px;font-size:16px}
+  .lede{color:var(--muted);max-width:68ch;margin:-6px 0 22px;font-size:16px}
   .prose{max-width:70ch}
   .prose p{color:var(--muted);font-size:16px;margin:0 0 14px}
   .prose p:last-child{margin-bottom:0}
   .prose strong{color:var(--ink)}
 
+  /* ---------- website mock-up ---------- */
+  .browser{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);overflow:hidden;max-width:560px;margin:0 auto}
+  .browser .bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--ground-2);
+    border-bottom:1px solid var(--line)}
+  .browser .dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+  .browser .url{flex:1;margin-left:6px;background:var(--ground);border:1px solid var(--line-soft);
+    border-radius:6px;padding:3px 10px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .browser .view{padding:16px}
+  .site-title{font-family:var(--meme);font-size:30px;text-align:center;line-height:1}
+  .site-sub{text-align:center;color:var(--muted);font-size:12.5px;margin:2px 0 12px}
+  .browser img{border-radius:6px}
+  .row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .fake{font-size:12.5px;font-weight:600;border-radius:7px;padding:6px 11px;border:1px solid var(--line)}
+  .fake.solid{background:var(--saffron);color:var(--ground);border-color:var(--saffron)}
+  .fake.push{margin-left:auto}
+  .fake.link{border:0;color:var(--muted);text-decoration:underline;font-weight:400;padding:6px 2px}
+  .chips-title{font-size:13px;font-weight:600;margin:14px 0 8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--ground)}
+
+  /* ---------- Telegram mock-ups ---------- */
+  .phones{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+  .phone{background:var(--tg-bg);border-radius:22px;border:6px solid var(--panel);
+    box-shadow:var(--shadow);overflow:hidden;color:var(--tg-text);font-size:12.5px}
+  .tg-head{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--tg-head)}
+  .tg-avatar{width:30px;height:30px;border-radius:50%;background:#5aa7de;display:flex;
+    align-items:center;justify-content:center;font-weight:700;color:#fff;flex:none}
+  .tg-name{font-weight:600;font-size:13px;line-height:1.2}
+  .tg-sub{font-size:10.5px;color:var(--tg-dim)}
+  .tg-body{padding:12px 9px 14px;display:flex;flex-direction:column;gap:7px}
+  .msg{max-width:90%;border-radius:12px;padding:6px 9px;line-height:1.45}
+  .msg.me{align-self:flex-end;background:var(--tg-out);border-bottom-right-radius:3px}
+  .msg.bot{align-self:flex-start;background:var(--tg-in);border-bottom-left-radius:3px}
+  .msg.cmd{color:var(--tg-link)}
+  .photo{align-self:flex-start;max-width:90%;background:var(--tg-in);border-radius:12px;overflow:hidden}
+  .photo p{margin:0;padding:6px 9px}
+  .keys{align-self:flex-start;width:90%;display:grid;gap:4px}
+  .keys.k2{grid-template-columns:1fr 1fr}
+  .keys.k3{grid-template-columns:1fr 1fr 1fr}
+  .key{background:var(--tg-key);border-radius:7px;padding:6px 4px;text-align:center;font-size:11.5px}
+  .key.tapped{outline:2px solid var(--tg-link);outline-offset:-2px}
+  .phone-cap{text-align:center;font-size:11.5px;color:var(--faint);margin-top:10px;
+    text-transform:uppercase;letter-spacing:.1em}
+
   /* ---------- cards ---------- */
-  .duo{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .quad{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
   .form{background:linear-gradient(180deg,var(--panel),var(--ground-2));border:1px solid var(--line);
     border-radius:12px;padding:20px;position:relative;overflow:hidden}
   .form::after{content:"";position:absolute;inset:0 0 auto;height:3px;
@@ -109,16 +154,8 @@
   .form p{margin:0;color:var(--muted);font-size:14px}
   .form .role{margin-top:11px;font-family:var(--mono);font-size:11.5px;color:var(--leaf)}
 
-  /* ---------- code panels ---------- */
-  .route{background:linear-gradient(180deg,var(--panel),var(--ground-2));
-    border:1px solid var(--line);border-radius:14px;padding:22px;overflow-x:auto}
-  .route pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.75;color:var(--ink);white-space:pre}
-  .route .g{color:var(--saffron)} .route .h{color:var(--lotus)} .route .t{color:var(--leaf)} .route .m{color:var(--faint)}
-  .payload-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
-  .panel-label{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--faint);margin:0 0 10px}
-
   /* ---------- design decisions ---------- */
-  .decision{display:grid;grid-template-columns:190px 1fr;gap:20px;padding:17px 0;
+  .decision{display:grid;grid-template-columns:200px 1fr;gap:20px;padding:17px 0;
     border-top:1px dashed var(--line)}
   .decision:last-child{border-bottom:1px dashed var(--line)}
   .decision .d-label{text-transform:uppercase;letter-spacing:.1em;font-size:11.5px;
@@ -126,7 +163,29 @@
   .decision p{margin:0;color:var(--muted);font-size:14.5px}
   .decision strong{color:var(--ink)}
 
-  /* ---------- status ---------- */
+  /* ---------- under the hood ---------- */
+  .hood{border-top:2px solid var(--line);margin-top:72px;padding-top:8px}
+  .hood h3{font-family:var(--display);font-size:19px;margin:34px 0 6px}
+  .hood h3 + p{color:var(--muted);font-size:15px;max-width:70ch;margin:0 0 14px}
+  .route{background:linear-gradient(180deg,var(--panel),var(--ground-2));
+    border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+  .route pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.75;color:var(--ink);white-space:pre}
+  .route .g{color:var(--saffron)} .route .h{color:var(--lotus)} .route .t{color:var(--leaf)} .route .m{color:var(--faint)}
+  .payload-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  .panel-label{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--faint);margin:0 0 10px}
+  .steps{counter-reset:step;list-style:none;margin:0;padding:0;display:grid;gap:8px;max-width:72ch}
+  .steps li{counter-increment:step;position:relative;padding:10px 14px 10px 46px;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;font-size:14.5px;color:var(--muted)}
+  .steps li::before{content:counter(step);position:absolute;left:14px;top:9px;width:22px;height:22px;
+    border-radius:50%;background:var(--saffron);color:var(--ground);font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center}
+  .steps strong{color:var(--ink)}
+  table{border-collapse:collapse;width:100%;max-width:72ch;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);font-weight:700}
+  td{color:var(--muted)} td:first-child{color:var(--ink)}
+
+  /* ---------- status, stack, closing ---------- */
   .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
   .status-col h3{text-transform:uppercase;letter-spacing:.14em;font-size:11.5px;font-weight:700;margin:0 0 10px}
   .status-col.done h3{color:var(--leaf)}
@@ -137,8 +196,6 @@
   .status-item .mk{flex:none;margin-top:2px;font-size:11.5px}
   .status-col.done .mk{color:var(--leaf)}
   .status-col.next .mk{color:var(--faint)}
-
-  /* ---------- stack + closing ---------- */
   .crew{display:flex;flex-wrap:wrap;gap:10px}
   .flag{display:inline-flex;align-items:center;gap:9px;background:var(--ground-2);
     border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:13.5px}
@@ -149,18 +206,19 @@
     font-weight:700;display:block;margin-bottom:10px}
   .final p{margin:0 0 20px;color:var(--ink);font-size:15.5px;max-width:60ch}
 
-  footer{max-width:960px;margin:66px auto 0;padding-top:20px;border-top:1px solid var(--line);
+  footer{max-width:980px;margin:66px auto 0;padding-top:20px;border-top:1px solid var(--line);
     color:var(--faint);font-size:12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   footer .jr{letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 
-  @media (max-width:820px){
+  @media (max-width:860px){
     .hero{grid-template-columns:1fr;gap:26px}
+    .phones{grid-template-columns:1fr;max-width:340px;margin:0 auto}
     .decision{grid-template-columns:1fr;gap:6px}
     .payload-grid{grid-template-columns:1fr}
+    .numbers{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:520px){
-    .duo,.status-grid{grid-template-columns:1fr}
-    .meme .txt{font-size:18px}
+    .quad,.status-grid{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -169,8 +227,8 @@
 <div class="ribbon">
   <div class="brand"><a href="https://guoxiangng.github.io/" style="color:inherit;text-decoration:none">← Ng Guo Xiang</a> &nbsp;·&nbsp; dharmeme case study</div>
   <div class="links">
-    <a href="#how">how it works</a>
-    <a href="#status">status</a>
+    <a href="#see">see it</a>
+    <a href="#hood">under the hood</a>
     <a href="/dharmeme/" class="cta">Open the app ↗</a>
   </div>
 </div>
@@ -183,126 +241,161 @@
       <div>
         <div class="wordmark"><span class="dh">dhar</span>meme</div>
         <p class="strap">All memes are impermanent.</p>
-        <h1>A Buddhist meme generator: tap for a random one, or give it a topic.</h1>
-        <p class="intro">Affectionate humour about attachment, impermanence, the middle way and
-        the monkey mind, drawn onto meme templates everyone already knows. A small live app,
-        built for fun.</p>
+        <h1>Buddhist memes, on the web and on Telegram, in English and Chinese.</h1>
+        <p class="intro">Affectionate humour about attachment, impermanence, wandering minds and
+        lost counts of recitations. The joke is always on the person trying to practise, never on
+        the teaching. A small live product, built for fun.</p>
         <div class="hero-cta">
           <a class="btn primary" href="/dharmeme/">Open the app</a>
-          <a class="btn ghost" href="https://github.com/guoxiangng/dharmeme">View the code</a>
+          <a class="btn ghost" href="https://t.me/Dhamma_meme_bot">Telegram bot</a>
+          <a class="btn ghost" href="https://github.com/guoxiangng/dharmeme">Code</a>
         </div>
       </div>
       <div>
-        <div class="meme" role="img" aria-label="Two-panel sample meme. Rejected: letting go of attachment. Preferred: letting go of the standup meeting.">
-          <div class="row">
-            <div class="pic">
-              <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
-                <circle cx="60" cy="38" r="20" fill="var(--saffron)"/>
-                <path d="M22 116C22 84 38 64 60 64C82 64 98 84 98 116Z" fill="var(--maroon)"/>
-                <path d="M30 58 L8 34" stroke="var(--saffron)" stroke-width="9" stroke-linecap="round"/>
-                <path d="M51 34 l7 4 M69 34 l-7 4" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>
-                <path d="M52 49 q8 -5 16 0" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="txt">Letting go of attachment</div>
-          </div>
-          <div class="row">
-            <div class="pic">
-              <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
-                <circle cx="60" cy="38" r="20" fill="var(--saffron)"/>
-                <path d="M22 116C22 84 38 64 60 64C82 64 98 84 98 116Z" fill="var(--maroon)"/>
-                <path d="M90 62 L112 40" stroke="var(--saffron)" stroke-width="9" stroke-linecap="round"/>
-                <path d="M50 36 q4 -4 8 0 M62 36 q4 -4 8 0" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>
-                <path d="M51 46 q9 8 18 0" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="txt">Letting go of the 9am standup</div>
-          </div>
-        </div>
-        <div class="meme-cap">The format, redrawn for this page. The app uses the real templates.</div>
+        <img class="hero-meme" src="/images/dharmeme/hero.jpg" width="640" height="297"
+             alt="Evil Kermit meme. Me: I have let it go. Me to me: bring it up one more time." />
+        <div class="cap">From the pool, drawn by the app</div>
       </div>
     </div>
 
-    <!-- WHY -->
+    <div class="numbers">
+      <div class="num"><b>30</b><span>meme templates, each text box placed by hand</span></div>
+      <div class="num"><b>89</b><span>memes in the English pool, every one approved by a person</span></div>
+      <div class="num"><b>44</b><span>themes to ask for: 24 English, 20 Chinese</span></div>
+      <div class="num"><b>105</b><span>automated tests, run on every push</span></div>
+    </div>
+
+    <!-- SEE IT -->
+    <section id="see">
+      <div class="sec-head"><span class="eyebrow">See it</span><h2>The website</h2></div>
+      <p class="lede">One page. It opens on a meme from the pool; "Another one" deals the next. Under
+      it, a list of themes: tap one and a fresh meme is written for it on the spot.</p>
+      <div class="browser">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">guoxiangng.github.io/dharmeme</span></div>
+        <div class="view">
+          <div class="site-title">dharmeme</div>
+          <div class="site-sub">All memes are impermanent.</div>
+          <img src="/images/dharmeme/random.jpg" width="640" height="412" loading="lazy"
+               alt="Woman yelling at cat meme. You said meditation would make you calm! I said it would make me notice I'm not." />
+          <div class="row">
+            <span class="fake solid">Another one</span><span class="fake">Download</span>
+            <span class="fake push">👍</span><span class="fake">👎</span><span class="fake link">Report</span>
+          </div>
+          <div class="chips-title">Or get a fresh one on a theme</div>
+          <div class="chips">
+            <span class="chip">Impermanence</span><span class="chip">Dukkha</span><span class="chip">Non-self</span>
+            <span class="chip">Attachment</span><span class="chip">Letting go</span><span class="chip">The middle way</span>
+            <span class="chip">Karma</span><span class="chip">Right speech</span><span class="chip">Monkey mind</span>
+            <span class="chip">Loving-kindness</span><span class="chip">Emptiness</span>
+            <span class="chip">The bodhisattva vow</span><span class="chip">Chan and Zen</span>
+            <span class="chip">Pure Land practice</span><span class="chip">Vegetarian life</span><span class="chip">Merit</span>
+          </div>
+        </div>
+      </div>
+      <div class="cap">The live page, recreated</div>
+    </section>
+
     <section>
-      <div class="sec-head"><span class="eyebrow">Why build it</span></div>
-      <div class="prose">
-        <p>Any general meme generator can do this if you type "make it Buddhist" into the
-        prompt. So the value here is not capability, it is <strong>curation</strong>: a prompt
-        tuned for one kind of joke, a hand-picked set of templates, and a bank of memes that a
-        person has actually read and approved.</p>
-        <p>It is also a small, complete exercise in the question every free AI app has to
-        answer: <strong>what stops a popular free thing from running up an unbounded model
-        bill?</strong></p>
+      <div class="sec-head"><span class="eyebrow">See it</span><h2>The Telegram bot</h2></div>
+      <p class="lede">The same engine behind a bot. These are recreations of real exchanges; every
+      picture was drawn by the bot's own renderer.</p>
+      <div class="phones">
+        <div>
+          <div class="phone">
+            <div class="tg-head"><div class="tg-avatar">D</div>
+              <div><div class="tg-name">Dharmeme</div><div class="tg-sub">bot</div></div></div>
+            <div class="tg-body">
+              <div class="msg me cmd">/meme</div>
+              <div class="msg bot">Pick a theme:</div>
+              <div class="keys k2">
+                <div class="key">Impermanence</div><div class="key">Attachment</div>
+                <div class="key">Monkey mind</div><div class="key">Emptiness</div>
+                <div class="key tapped">Pure Land practice</div><div class="key">Merit</div>
+              </div>
+              <div class="photo">
+                <img src="/images/dharmeme/theme.jpg" width="640" height="881" loading="lazy"
+                     alt="Panik Kalm Panik meme. Lost count at 847 nianfo. Start over, begin again. Was I at 847 or 87." />
+              </div>
+            </div>
+          </div>
+          <div class="phone-cap">Pick a theme, get a fresh one</div>
+        </div>
+
+        <div>
+          <div class="phone">
+            <div class="tg-head"><div class="tg-avatar">D</div>
+              <div><div class="tg-name">Dharmeme</div><div class="tg-sub">bot</div></div></div>
+            <div class="tg-body">
+              <div class="msg me cmd">/chinesememe</div>
+              <div class="msg bot">选一个主题：</div>
+              <div class="keys k3">
+                <div class="key">随机一张</div><div class="key">无常</div><div class="key">放下</div>
+                <div class="key">随缘</div><div class="key">念佛</div><div class="key">吃素</div>
+                <div class="key">功德</div><div class="key tapped">口业</div><div class="key">佛系</div>
+              </div>
+              <div class="photo">
+                <img src="/images/dharmeme/chinese.jpg" width="640" height="533" loading="lazy"
+                     alt="Monkey Puppet meme with a Simplified Chinese caption: the Dharma teacher has just finished saying not to gossip, and I walk out of the hall complaining to a fellow practitioner about the temple next door." />
+              </div>
+              <div class="msg bot" style="font-size:11px;color:var(--tg-dim)">/chinesememe_tw 是繁體版</div>
+            </div>
+          </div>
+          <div class="phone-cap">Chinese, in either script</div>
+        </div>
+
+        <div>
+          <div class="phone">
+            <div class="tg-head"><div class="tg-avatar">D</div>
+              <div><div class="tg-name">Dharmeme</div><div class="tg-sub">bot · the owner's chat</div></div></div>
+            <div class="tg-body">
+              <div class="photo">
+                <img src="/images/dharmeme/pending.jpg" width="500" height="494" loading="lazy"
+                     alt="UNO Draw 25 meme. The card says: ask for help, or draw 25. The player holding a huge hand of cards is labelled: my pride." />
+                <p>Pending. Publish it?</p>
+              </div>
+              <div class="keys k2"><div class="key tapped">Approve</div><div class="key">Reject</div></div>
+              <div class="msg bot" style="color:var(--tg-dim)">In the pool.</div>
+              <div class="msg bot">Reported by a user. Keep it in the pool?</div>
+              <div class="keys k2"><div class="key">Keep</div><div class="key">Remove</div></div>
+            </div>
+          </div>
+          <div class="phone-cap">Nothing is published unread</div>
+        </div>
       </div>
     </section>
 
-    <!-- TWO FEATURES -->
-    <section id="how">
-      <div class="sec-head">
-        <span class="eyebrow">Two features</span>
-        <h2>One costs nothing. One is metered.</h2>
-      </div>
-      <div class="duo">
+    <!-- WHAT IT DOES -->
+    <section>
+      <div class="sec-head"><span class="eyebrow">What it does</span><h2>Four things</h2></div>
+      <div class="quad">
         <div class="form">
           <div class="k">Random</div>
-          <h3>Tap, get a meme</h3>
-          <p>Captions are written in batches, one template at a time, then reviewed by hand.
-          Only approved ones are in the pool. The page loads the pool once and the button picks
-          from it in your browser, so there is no model call and no cost per tap.</p>
-          <div class="role">approved pool → canvas</div>
+          <h3>A pool a person has read</h3>
+          <p>Random deals from a pool of memes that were each approved by hand. No model runs when
+          you tap it, so it is instant and costs nothing.</p>
+          <div class="role">approved pool → drawn on your device</div>
         </div>
         <div class="form">
-          <div class="k">Prompt</div>
-          <h3>Give it a topic</h3>
-          <p>One model call reads your topic and the template catalog, picks the template whose
-          joke format fits, and writes the text for each of its slots. It returns a few short
-          strings, and your browser does the drawing.</p>
-          <div class="role">topic → {template_id, slots} → canvas</div>
+          <div class="k">Themes</div>
+          <h3>A fresh one, on a Buddhist theme</h3>
+          <p>Pick a theme, from impermanence to Pure Land practice, and a model chooses a template
+          and writes the caption. There is no text box: visitors pick, they never type.</p>
+          <div class="role">theme → {template, text} → drawn</div>
         </div>
-      </div>
-    </section>
-
-    <!-- HOW A MEME IS MADE -->
-    <section>
-      <div class="sec-head"><span class="eyebrow">No magic</span><h2>How the caption matches the picture</h2></div>
-      <p class="lede">A meme template is a joke format with a fixed meaning, not just a picture. So
-      a caption is always written for one specific template, never paired with an image at random.
-      Each template is described in words the model can choose from.</p>
-      <div class="payload-grid">
-        <div>
-          <p class="panel-label">catalog.yaml — one template</p>
-          <div class="route">
-<pre>- <span class="g">id</span>: drake
-  <span class="g">format</span>: <span class="m">&gt;-</span>
-    Two panels. Top: something rejected
-    with disgust. Bottom: the thing
-    preferred instead.
-  <span class="g">slots</span>:
-    - <span class="h">name</span>: rejected
-      <span class="h">box</span>: [0.52, 0.02, 0.46, 0.46]
-      <span class="h">max_chars</span>: 70
-    - <span class="h">name</span>: preferred
-      <span class="h">box</span>: [0.52, 0.52, 0.46, 0.46]
-      <span class="h">max_chars</span>: 70</pre>
-          </div>
+        <div class="form">
+          <div class="k">Chinese</div>
+          <h3>Its own voice, not a translation</h3>
+          <p>A separate set of themes and a separate prompt for 汉传佛教 and 人间佛教: 念佛, 吃素,
+          随缘, 做义工. Available in Simplified and Traditional characters.</p>
+          <div class="role">/chinesememe · /chinesememe_tw</div>
         </div>
-        <div>
-          <p class="panel-label">what the model returns</p>
-          <div class="route">
-<pre>{
-  <span class="g">"template_id"</span>: <span class="t">"drake"</span>,
-  <span class="g">"slots"</span>: {
-    <span class="h">"rejected"</span>:  <span class="t">"Letting go of attachment"</span>,
-    <span class="h">"preferred"</span>: <span class="t">"Letting go of the 9am standup"</span>
-  }
-}
-
-<span class="m">validated before it is drawn:
-  template exists · slot names match
-  each text within max_chars
-  one retry, then a random meme instead</span></pre>
-          </div>
+        <div class="form">
+          <div class="k">Feedback</div>
+          <h3>Thumbs that can't snowball</h3>
+          <p>Every pool meme has 👍, 👎 and Report. Votes nudge the order but never the exposure:
+          each meme is shown once before any repeats, so popular ones don't crowd out the rest.</p>
+          <div class="role">votes → order, not frequency</div>
         </div>
       </div>
     </section>
@@ -312,53 +405,158 @@
       <div class="sec-head"><span class="eyebrow">Design decisions</span><h2>Why it's built this way</h2></div>
       <div class="decisions">
         <div class="decision">
-          <div class="d-label">No generated images</div>
-          <p><strong>The model only ever writes text.</strong> Generating an image costs roughly a
-          hundred times more than generating a caption, and a familiar template is funnier anyway
-          because people already know the format.</p>
+          <div class="d-label">Curation, not capability</div>
+          <p>Any general meme tool can do this if you type "make it Buddhist". The value here is
+          what a general tool lacks: <strong>a tuned voice, hand-placed templates, and a pool a
+          person has actually read</strong>.</p>
         </div>
         <div class="decision">
-          <div class="d-label">Drawn in the browser</div>
-          <p>The meme is rendered on a canvas on your device. The backend returns a template name
-          and a few strings, so it needs no image library and stays a tiny function. Text is
-          wrapped, shrunk, and as a last resort truncated, so it <strong>never leaves its
-          box</strong>.</p>
+          <div class="d-label">Visitors pick, they don't type</div>
+          <p>The first version had an open topic box. People test those, and a religious project
+          is a poor place to find out what they type. It was replaced with a fixed list of themes,
+          so <strong>nothing a stranger writes ever reaches the model</strong>. No content filter
+          to maintain, because there is nothing to filter.</p>
+        </div>
+        <div class="decision">
+          <div class="d-label">A person approves, a model proposes</div>
+          <p>A daily job writes new memes and a second model call reviews them against the tone
+          rules. The survivors still wait as pending until the owner approves each one in a
+          private chat. <strong>The pool only grows through a human decision.</strong></p>
+        </div>
+        <div class="decision">
+          <div class="d-label">Even exposure</div>
+          <p>Ranking by popularity feeds itself: whatever is shown most gets the most votes. Here
+          every meme appears once per pass, votes only shift the order, a rating counts by rate and
+          not by volume, and nothing counts until ten votes. <strong>500 thumbs up earn no more
+          than 10</strong> at the same rate.</p>
         </div>
         <div class="decision">
           <div class="d-label">A ceiling on the bill</div>
-          <p>The prompt feature has a per-visitor daily limit and a <strong>global daily
-          cap</strong>, both counted before the model is called. Once the cap is reached the page
-          says the meme well is empty for today and serves a random one. Cloud budget alerts only
-          warn; the cap in the code is what actually stops spending.</p>
+          <p>A free app that calls a model on every tap has no cost ceiling. Random calls no model
+          at all. Themed memes are capped per visitor and per day, counted before the model is
+          called. The daily job makes a fixed number of calls whatever the traffic.
+          <strong>Cloud budget alerts only warn; the cap in the code is what stops spending.</strong></p>
         </div>
         <div class="decision">
           <div class="d-label">It never looks broken</div>
-          <p>Every failure path, whether a declined topic, the limit, a bad model reply or an
-          outage, ends the same way: a short message and a random meme from the approved bank.</p>
+          <p>Limit reached, model error, service down: every failure ends the same way, a short
+          on-theme message and a meme from the pool. The website keeps a bundled copy of the pool
+          and works with the backend off.</p>
         </div>
         <div class="decision">
           <div class="d-label">Affectionate, not mocking</div>
-          <p>The jokes are about the practitioner's struggle: craving, distraction, forced calm.
-          The prompt rules out ridiculing the Buddha, the Sangha, sacred objects or any other
-          religion, and the model may decline a topic outright.</p>
+          <p>The jokes are about craving, distraction and forced calm. The prompt rules out
+          ridiculing the Buddha, the Sangha, sacred objects or any other religion; for Pure Land
+          practice the joke is on the practitioner's wandering mind, never on Amitabha. A reported
+          meme goes to the owner to keep or remove.</p>
         </div>
       </div>
     </section>
 
-    <!-- ARCHITECTURE -->
-    <section>
-      <div class="sec-head"><span class="eyebrow">Architecture</span><h2>A static page and one small function</h2></div>
-      <div class="route">
-<pre><span class="g">Random</span>   browser ─► the approved pool <span class="m">(fetched once per visit, no model call)</span> ─► <span class="t">canvas</span>
-<span class="h">Prompt</span>   browser ─► Lambda Function URL ─► usage check ─► Claude Haiku on Bedrock
-                         └─► {template_id, slots} ─► <span class="t">canvas</span>
+    <!-- UNDER THE HOOD -->
+    <section id="hood" class="hood">
+      <div class="sec-head"><span class="eyebrow">Under the hood</span><h2>For the technically curious</h2></div>
+      <p class="lede">Everything above works without reading this part. It is a static page, one
+      small function, one table, and a model called a bounded number of times.</p>
 
-<span class="m">site</span>     GitHub Pages, built by a workflow from the repo
-<span class="m">pool</span>     DynamoDB — the live list of memes; the repo only holds a seed
-<span class="m">limits</span>   DynamoDB counters — per visitor per day, and one global per day
-<span class="m">brain</span>    Claude Haiku on Amazon Bedrock, behind a provider interface
-<span class="m">deploy</span>   AWS SAM · one zip Lambda · ap-southeast-1</pre>
+      <h3>Architecture</h3>
+      <p>The website and the bot are two front ends over one Lambda. Random never touches the model.</p>
+      <div class="route">
+<pre><span class="g">Website</span>    static page on GitHub Pages     ─►
+<span class="g">Telegram</span>   webhook, drawn with Pillow      ─►   <span class="h">one Lambda</span> (Function URL)
+<span class="g">Schedule</span>   EventBridge, 09:00 daily        ─►
+
+<span class="h">Lambda</span>     ─► <span class="t">DynamoDB</span>                  the pool, votes and usage limits
+<span class="h">Lambda</span>     ─► <span class="t">Claude Haiku on Bedrock</span>   only for themed memes and the daily batch
+
+<span class="m">GET  /memes</span>     the approved pool, fetched once per visit      <span class="m">no model call</span>
+<span class="m">POST /meme</span>      a theme id → a fresh meme                       <span class="m">one call, rate-limited</span>
+<span class="m">POST /vote</span>      👍 👎 Report                                    <span class="m">no model call</span>
+<span class="m">POST /telegram</span>  the bot's webhook, checked against a secret</pre>
       </div>
+
+      <h3>How the caption matches the picture</h3>
+      <p>A meme template is a joke format with a fixed meaning, not just a picture. Each one is
+      described in words, with its text boxes as fractions of the image. The model is offered a
+      random four of the thirty, so it can't lean on one favourite, and returns only a template name
+      and a few strings.</p>
+      <div class="payload-grid">
+        <div>
+          <p class="panel-label">catalog.yaml — one template</p>
+          <div class="route">
+<pre>- <span class="g">id</span>: bike-fall
+  <span class="g">format</span>: <span class="m">&gt;-</span>
+    A cyclist pushes a stick into his
+    own wheel, crashes, and blames
+    something else.
+  <span class="g">slots</span>:
+    - <span class="h">name</span>: self_sabotage
+      <span class="h">box</span>: [0.07, 0.50, 0.36, 0.15]
+      <span class="h">max_chars</span>: 35
+    - <span class="h">name</span>: blame
+      <span class="h">box</span>: [0.46, 0.71, 0.47, 0.12]
+      <span class="h">max_chars</span>: 35</pre>
+          </div>
+        </div>
+        <div>
+          <p class="panel-label">what the model returns</p>
+          <div class="route">
+<pre>{
+  <span class="g">"template_id"</span>: <span class="t">"bike-fall"</span>,
+  <span class="g">"slots"</span>: {
+    <span class="h">"cyclist"</span>: <span class="t">"Me"</span>,
+    <span class="h">"self_sabotage"</span>: <span class="t">"Checking my phone before bed"</span>,
+    <span class="h">"blame"</span>: <span class="t">"Why is my mind so restless"</span>
+  }
+}
+
+<span class="m">checked before it is drawn:
+  template exists · slot names match
+  each text within its limit
+  if not, one retry that says what was wrong
+  then a meme from the pool instead</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <h3>The daily batch</h3>
+      <p>How the pool grows without anyone writing captions, and without anything going out unread.</p>
+      <ol class="steps">
+        <li><strong>Write.</strong> One model call writes a meme for each of the templates that have the fewest, shown what the pool already has so it doesn't repeat itself.</li>
+        <li><strong>Check.</strong> Plain code drops anything invalid, over length, or a duplicate.</li>
+        <li><strong>Review.</strong> A second, separate model call passes or fails each one against the tone rules. If its verdict can't be read, nothing is added.</li>
+        <li><strong>Hold.</strong> Survivors are stored as pending and are invisible everywhere.</li>
+        <li><strong>Approve.</strong> Each is sent to the owner's chat with Approve and Reject. Only presses from that one chat count, and a meme is never sent twice.</li>
+      </ol>
+
+      <h3>Drawing the text</h3>
+      <p>Text is wrapped to its box, then the font shrinks until it fits with every word whole; a
+      word is split or text truncated only at the minimum size, so nothing leaves its box. The
+      browser draws on a canvas, and a Python twin of the same rules draws for Telegram, which needs
+      a real image file. Chinese has no spaces, so it breaks between characters, never starts a line
+      with a comma or full stop, and uses a Chinese font, since the classic meme typeface has no
+      Chinese glyphs.</p>
+
+      <h3>One Chinese source, two scripts</h3>
+      <p>Chinese themes, the prompt and every caption are written and stored once, in Traditional
+      characters. The Simplified version is that text converted character by character, so the two
+      can't drift apart and each caption is vetted once.</p>
+
+      <h3>What costs money</h3>
+      <table>
+        <tr><th>Action</th><th>Model calls</th><th>Bounded by</th></tr>
+        <tr><td>Random, on the web or the bot</td><td>None</td><td>Nothing to bound</td></tr>
+        <tr><td>A vote or a report</td><td>None</td><td>One per person per meme</td></tr>
+        <tr><td>A themed meme</td><td>One small call, a second if the first is rejected</td><td>5 a day per visitor, 200 a day in total</td></tr>
+        <tr><td>The daily batch</td><td>Four: write and review, in each language</td><td>Fixed, whatever the traffic</td></tr>
+      </table>
+
+      <h3>Tests and deployment</h3>
+      <p>105 automated tests (91 Python, 14 JavaScript) cover the text fitting, the model's reply
+      handling with a stubbed model, the limits, the votes, the bot, the generator and the Chinese
+      rendering. Every push runs them; the site then builds and deploys by itself, and the build
+      fails if a template image is missing or not the size its text boxes were placed on. The API
+      is defined in one AWS SAM template.</p>
     </section>
 
     <!-- STATUS -->
@@ -366,19 +564,19 @@
       <div class="sec-head"><span class="eyebrow">Honest status</span><h2>Built vs. not yet</h2></div>
       <div class="status-grid">
         <div class="status-col done">
-          <h3>Built</h3>
-          <div class="status-item"><span class="mk">✓</span><span>Spec for the catalog, renderer, bank, prompt contract and limits</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Template catalog: 30 classic formats, each text box checked on the real image</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Browser renderer with text fitting, covered by tests</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Random: a reviewed pool of 101 memes, served from DynamoDB</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Topic memes: Lambda, usage limits, Claude Haiku on Bedrock</span></div>
-          <div class="status-item"><span class="mk">✓</span><span>Deploy pipeline: tests, image check, GitHub Pages; AWS SAM for the API</span></div>
+          <h3>Built and live</h3>
+          <div class="status-item"><span class="mk">✓</span><span>Website: Random, themed memes, votes, a "write your own" editor</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Telegram bot on the same engine</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Chinese in Simplified and Traditional, with its own themes and voice</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Daily generator with a model reviewer and owner approval</span></div>
+          <div class="status-item"><span class="mk">✓</span><span>Usage limits, vote and report handling</span></div>
         </div>
         <div class="status-col next">
           <h3>Not yet</h3>
-          <div class="status-item"><span class="mk">○</span><span>Telegram bot: built on the same engine, not switched on yet</span></div>
-          <div class="status-item"><span class="mk">○</span><span>Scheduled generator that grows the pool, with an AI tone check</span></div>
-          <div class="status-item"><span class="mk">○</span><span>A Chinese edition</span></div>
+          <div class="status-item"><span class="mk">○</span><span>Chinese on the website; it is bot-only for now</span></div>
+          <div class="status-item"><span class="mk">○</span><span>The Chinese pool is new and still being vetted</span></div>
+          <div class="status-item"><span class="mk">○</span><span>The bot's first reply after a quiet spell is slow</span></div>
+          <div class="status-item"><span class="mk">○</span><span>Chinese meme formats, such as 熊猫头</span></div>
         </div>
       </div>
     </section>
@@ -388,11 +586,12 @@
       <div class="sec-head"><span class="eyebrow">Stack</span></div>
       <div class="crew">
         <span class="flag"><span class="fx">◈</span>Vanilla JS + Canvas</span>
-        <span class="flag"><span class="fx">◈</span>Python 3.12</span>
+        <span class="flag"><span class="fx">◈</span>Python 3.13 · Pillow</span>
         <span class="flag"><span class="fx">◈</span>Claude Haiku on Bedrock</span>
-        <span class="flag"><span class="fx">◈</span>AWS Lambda · DynamoDB</span>
+        <span class="flag"><span class="fx">◈</span>AWS Lambda · DynamoDB · EventBridge</span>
         <span class="flag"><span class="fx">◈</span>AWS SAM</span>
-        <span class="flag"><span class="fx">◈</span>GitHub Pages</span>
+        <span class="flag"><span class="fx">◈</span>Telegram Bot API</span>
+        <span class="flag"><span class="fx">◈</span>GitHub Pages + Actions</span>
       </div>
     </section>
 
@@ -400,8 +599,8 @@
     <section>
       <div class="final">
         <span class="k">The middle way</span>
-        <p>Not a product, not a moat: a small, finished thing that makes one kind of joke well and
-        cannot surprise its owner with a bill.</p>
+        <p>Not a product with a moat: a small, finished thing that makes one kind of joke well, asks
+        a person before it publishes, and cannot surprise its owner with a bill.</p>
         <a class="btn primary" href="/dharmeme/">Open dharmeme</a>
       </div>
     </section>
