@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Field Guides — Ng Guo Xiang</title>
+  <meta name="description" content="Maps and mental models made while learning a field. Work in progress: the Cloud Security Lifecycle Map and the Security Capability Map." />
+  <meta property="og:title" content="Field Guides — Ng Guo Xiang" />
+  <meta property="og:description" content="Work-in-progress maps of cloud security: one change from design to production, and every layer you defend × what you do about it." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://guoxiangng.github.io/field-guides/" />
+  <meta property="og:image" content="https://guoxiangng.github.io/field-guides/lifecycle-map.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪷</text></svg>" />
+  <style>
+    .wip {
+      font-family: var(--font-ui);
+      border: 2px dashed var(--rose);
+      background: color-mix(in srgb, var(--rose) 14%, transparent);
+      border-radius: 14px;
+      padding: 1.1rem 1.3rem;
+      margin: 0 0 2.4rem;
+      max-width: none;
+    }
+    .wip__title {
+      display: block;
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+    }
+    .wip p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+    .guide { margin: 0 0 clamp(3.5rem, 8vw, 5.5rem); }
+    .guide__kicker {
+      display: inline-block;
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--paper);
+      background: var(--rose);
+      border-radius: 999px;
+      padding: 0.25rem 0.8rem;
+      margin-bottom: 0.9rem;
+    }
+    .guide__title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(1.6rem, 4vw, 2.3rem);
+      line-height: 1.2;
+      margin: 0 0 0.6rem;
+    }
+    .guide p, .guide ul { max-width: var(--measure); }
+    .guide ul { padding-left: 1.2rem; }
+    .guide li { margin: 0.2rem 0; }
+    .poster {
+      position: relative;
+      margin: 1.6rem 0 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #0d1420;
+    }
+    .poster img { display: block; width: 100%; height: auto; }
+    .poster__stamp {
+      position: absolute;
+      top: 0.8rem;
+      right: 0.8rem;
+      font-family: var(--font-ui);
+      font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #0d1420;
+      background: #fbbf24;
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+    .guide__links { display: flex; flex-wrap: wrap; gap: 0.7rem; margin: 0 0 1rem; }
+    .guide__note { font-family: var(--font-ui); font-size: 0.85rem; color: var(--ink-faint); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="nav__brand" href="../index.html#top">guoxlostinthecloud</a>
+      <ul class="nav__links">
+        <li><a href="../index.html#guides">← Back</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="clouds" aria-hidden="true">
+    <span class="clouds__wisp clouds__wisp--1"></span>
+    <span class="clouds__wisp clouds__wisp--2"></span>
+    <span class="clouds__wisp clouds__wisp--3"></span>
+  </div>
+
+  <main id="top">
+    <section class="section" style="border-top: none; padding-top: clamp(3rem, 8vw, 5rem);">
+      <h1 class="section__title">Field Guides</h1>
+      <p class="section__lead">
+        Maps and mental models I make while learning a field. Each one tries to put a whole
+        area on one page, so the pieces make sense in relation to each other. The first two
+        are about cloud security.
+      </p>
+
+      <div class="wip" role="note">
+        <span class="wip__title">🚧 Work in progress</span>
+        <p>Both maps are v0.1 drafts. I'm a platform architect learning security, and these are
+        being reviewed by security practitioners. Expect mistakes and missing pieces. Corrections
+        are welcome: <a href="https://www.linkedin.com/in/guoxiangng/" target="_blank" rel="noopener">LinkedIn</a>
+        or <a href="mailto:guoxiang231@gmail.com">email</a>.</p>
+      </div>
+
+      <article class="guide" id="lifecycle">
+        <span class="guide__kicker">Work in progress · v0.1</span>
+        <h2 class="guide__title">The Cloud Security Lifecycle Map</h2>
+        <p>Follow one change from design to production. For each of seven stages: a real incident
+        that happened there, what goes wrong, what catches it (product categories, AWS services,
+        open-source and commercial tools), how it applies to AI systems, who owns it, and what
+        evidence it leaves behind.</p>
+        <ul>
+          <li><strong>Read left to right</strong> as a change moves: design, code, build, deploy, run, respond.</li>
+          <li><strong>Read top to bottom</strong> to see one stage through every lens.</li>
+          <li><strong>The loops underneath</strong> are the point: runtime evidence decides what to fix first upstream, and every incident feeds back into design.</li>
+        </ul>
+        <div class="poster">
+          <a href="lifecycle-map.svg"><img src="lifecycle-map.png" alt="The Cloud Security Lifecycle Map: seven stages from design to respond and recover, each with a real incident, threats, capabilities, AWS services, open-source and commercial tools, an AI twist, owners, evidence and frameworks" loading="lazy" /></a>
+          <span class="poster__stamp">Draft · work in progress</span>
+        </div>
+        <div class="guide__links">
+          <a class="btn btn--primary" href="lifecycle-map.svg">Open full size (zoomable)</a>
+          <a class="btn" href="lifecycle-map.png" download>Download PNG</a>
+        </div>
+        <p class="guide__note">Original structure. Incidents are summarised from public reporting. Vendors and services are examples of each category, not endorsements.</p>
+      </article>
+
+      <article class="guide" id="capability">
+        <span class="guide__kicker">Work in progress · v0.1</span>
+        <h2 class="guide__title">The Security Capability Map</h2>
+        <p>Every layer you defend crossed with what you do about it. Eight rows (identity, endpoints,
+        network, cloud accounts, workloads and Kubernetes, applications and APIs, data, AI systems)
+        against the five NIST functions (identify, protect, detect, respond, recover). Each cell names
+        the capability, its product category and the AWS services that cover it; each row names its
+        threats and owner.</p>
+        <ul>
+          <li><strong>Products are shapes, not boxes:</strong> map any product onto the grid to see which cells it actually fills.</li>
+          <li><strong>The left columns are posture, the right are runtime:</strong> the two halves of cloud security.</li>
+          <li><strong>AI is a new row, not a new discipline:</strong> the same five verbs apply.</li>
+        </ul>
+        <div class="poster">
+          <a href="capability-map.svg"><img src="capability-map.png" alt="The Security Capability Map: eight layers you defend against the five NIST functions, with capabilities, product categories, AWS services, threats, owners, the MITRE ATT&amp;CK tactics and key frameworks" loading="lazy" /></a>
+          <span class="poster__stamp">Draft · work in progress</span>
+        </div>
+        <div class="guide__links">
+          <a class="btn btn--primary" href="capability-map.svg">Open full size (zoomable)</a>
+          <a class="btn" href="capability-map.png" download>Download PNG</a>
+        </div>
+        <p class="guide__note">Credit: the grid structure (security functions across, asset types down) is from the
+        <a href="https://wiki.owasp.org/index.php/OWASP_Cyber_Defense_Matrix" target="_blank" rel="noopener">Cyber Defense Matrix</a>
+        by Sounil Yu (OWASP). Columns are the NIST CSF 2.0 functions. Rows, cell contents and annotations are original to this map.</p>
+      </article>
+
+      <p class="section__lead">More to come from other fields: platform architecture, observability, AI platforms.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Ng Guo Xiang · Built as a static site, hosted on GitHub Pages.</p>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
