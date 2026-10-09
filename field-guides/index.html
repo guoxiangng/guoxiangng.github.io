@@ -125,16 +125,18 @@
         <span class="guide__kicker">Work in progress · v0.1</span>
         <h2 class="guide__title">The Cloud Security Lifecycle Map</h2>
         <p>Follow one change from design to production. For each of seven stages: a real incident
-        that happened there, what goes wrong, what catches it (product categories, AWS services,
-        open-source and commercial tools), how it applies to AI systems, who owns it, and what
-        evidence it leaves behind.</p>
+        that happened there, what goes wrong, what catches it (product categories, AWS services and
+        open-source tools), how it applies to AI systems, who owns it, and what evidence it leaves
+        behind. Underneath, the commercial platforms are drawn as bars, because they span several
+        stages rather than belonging to one.</p>
         <ul>
           <li><strong>Read left to right</strong> as a change moves: design, code, build, deploy, run, respond.</li>
           <li><strong>Read top to bottom</strong> to see one stage through every lens.</li>
+          <li><strong>The bars underneath</strong> show which stages each kind of platform covers: a CNAPP spans code to response, GuardDuty only runtime.</li>
           <li><strong>The loops underneath</strong> are the point: runtime evidence decides what to fix first upstream, and every incident feeds back into design.</li>
         </ul>
         <div class="poster">
-          <a href="lifecycle-map.svg"><img src="lifecycle-map.png" alt="The Cloud Security Lifecycle Map: seven stages from design to respond and recover, each with a real incident, threats, capabilities, AWS services, open-source and commercial tools, an AI twist, owners, evidence and frameworks" loading="lazy" /></a>
+          <a href="lifecycle-map.svg"><img src="lifecycle-map.png" alt="The Cloud Security Lifecycle Map: seven stages from design to respond and recover, each with a real incident, threats, capabilities, AWS services, open-source tools, platforms that span stages, an AI twist, owners, evidence and frameworks" loading="lazy" /></a>
           <span class="poster__stamp">Draft · work in progress</span>
         </div>
         <div class="guide__links">
@@ -146,12 +148,12 @@
 
       <article class="guide" id="capability">
         <span class="guide__kicker">Work in progress · v0.1</span>
-        <h2 class="guide__title">The Security Capability Map</h2>
+        <h2 class="guide__title">The Security Capability Map <span style="font-size:.55em;vertical-align:middle;background:#ff9900;color:#0d1420;border-radius:6px;padding:.15em .5em;font-family:var(--font-ui);font-weight:700;">AWS edition</span></h2>
         <p>Every layer you defend crossed with what you do about it. Eight rows (identity, endpoints,
         network, cloud accounts, workloads and Kubernetes, applications and APIs, data, AI systems)
         against the five NIST functions (identify, protect, detect, respond, recover). Each cell names
         the capability, its product category and the AWS services that cover it; each row names its
-        threats and owner.</p>
+        threats and owner. This is the AWS edition; Azure and Google Cloud editions may follow.</p>
         <ul>
           <li><strong>Products are shapes, not boxes:</strong> map any product onto the grid to see which cells it actually fills.</li>
           <li><strong>The left columns are posture, the right are runtime:</strong> the two halves of cloud security.</li>
@@ -168,6 +170,18 @@
         <p class="guide__note">Credit: the grid structure (security functions across, asset types down) is from the
         <a href="https://wiki.owasp.org/index.php/OWASP_Cyber_Defense_Matrix" target="_blank" rel="noopener">Cyber Defense Matrix</a>
         by Sounil Yu (OWASP). Columns are the NIST CSF 2.0 functions. Rows, cell contents and annotations are original to this map.</p>
+      </article>
+
+      <article class="guide" id="landscape">
+        <span class="guide__kicker">Work in progress · v0.1</span>
+        <h2 class="guide__title">The Security Landscape Guide</h2>
+        <p>The reference behind both maps, for anyone crossing into security from cloud or platform work:
+        core ideas, the layers you defend, how security teams and roles divide the work, the frameworks
+        people actually use, the threats, one cloud attack walked through all 14 MITRE ATT&amp;CK tactics,
+        how a SOC works, and how to prioritise vulnerabilities.</p>
+        <div class="guide__links">
+          <a class="btn btn--primary" href="security-landscape.html">Read the guide</a>
+        </div>
       </article>
 
       <p class="section__lead">More to come from other fields: platform architecture, observability, AI platforms.</p>

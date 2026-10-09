@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security Landscape Guide</title>
+<style>
+:root{
+  --bg:#fbfaf7; --panel:#ffffff; --ink:#1d1f23; --muted:#5d6470; --line:#dcd8cf;
+  --accent:#1f6f6b; --accent-soft:#e3f0ee; --warn:#9a5b00; --warn-soft:#fbf0dc;
+  --chip:#f1eee8; --code:#f3f1ec;
+  --l1:#e6eef8; --l2:#e4f1ee; --l3:#efe8f6; --l4:#f8ebe4; --l5:#eef2e2;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181c; --panel:#1e2126; --ink:#e7e5e0; --muted:#a1a7b0; --line:#343841;
+    --accent:#5fc0b8; --accent-soft:#1f3533; --warn:#e3a94a; --warn-soft:#3a2e1a;
+    --chip:#2a2e35; --code:#262a30;
+    --l1:#1e2a3a; --l2:#1d3230; --l3:#2c2338; --l4:#38271f; --l5:#2a3020;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181c; --panel:#1e2126; --ink:#e7e5e0; --muted:#a1a7b0; --line:#343841;
+  --accent:#5fc0b8; --accent-soft:#1f3533; --warn:#e3a94a; --warn-soft:#3a2e1a;
+  --chip:#2a2e35; --code:#262a30;
+  --l1:#1e2a3a; --l2:#1d3230; --l3:#2c2338; --l4:#38271f; --l5:#2a3020;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:32px 16px 80px}
+header h1{font-size:2rem;margin:0 0 4px;letter-spacing:-.01em}
+header p{color:var(--muted);margin:0 0 10px;max-width:780px}
+a{color:var(--accent)}
+nav.toc{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0;margin:16px 0 8px;display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:.85rem;text-decoration:none;color:var(--ink);background:var(--chip);padding:4px 10px;border-radius:999px}
+nav.toc a:hover{background:var(--accent-soft);color:var(--accent)}
+section{margin-top:48px}
+h2{font-size:1.45rem;margin:0 0 6px;border-left:4px solid var(--accent);padding-left:10px}
+h3{font-size:1.1rem;margin:28px 0 8px}
+p,li{max-width:840px}
+.lead{color:var(--muted);margin-top:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.grid .card{margin:0}
+.card h4{margin:0 0 6px;font-size:1rem}
+.card p,.card li{margin:4px 0;font-size:.92rem}
+.card ul{padding-left:18px;margin:4px 0}
+.note{background:var(--warn-soft);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px;font-size:.92rem;margin:14px 0}
+.you{background:var(--accent-soft);border-left:4px solid var(--accent);padding:10px 14px;border-radius:6px;font-size:.92rem;margin:14px 0}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:760px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{background:var(--chip);font-weight:600}
+tr:last-child td{border-bottom:none}
+td.k{font-weight:600}
+.dim{color:var(--muted)}
+.stars{color:var(--warn);white-space:nowrap;font-weight:600}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.88em}
+figure{margin:18px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:6px}
+svg .box{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+svg .zone{fill:var(--chip)}
+svg .hl{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .l1{fill:var(--l1)} svg .l2{fill:var(--l2)} svg .l3{fill:var(--l3)} svg .l4{fill:var(--l4)} svg .l5{fill:var(--l5)}
+svg .t{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .ts{fill:var(--muted);font:11px system-ui,sans-serif}
+svg .tb{fill:var(--ink);font:600 13px system-ui,sans-serif}
+svg .ln{stroke:var(--muted);stroke-width:1.6;fill:none}
+svg .ahead{fill:var(--muted)}
+.theme{float:right;font-size:.8rem;background:var(--chip);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:4px 8px;cursor:pointer}
+.layers{display:grid;gap:6px;margin:12px 0}
+.layer{display:grid;grid-template-columns:170px 1fr;gap:10px;border-radius:8px;padding:10px 12px;border:1px solid var(--line);background:var(--panel)}
+.layer b{display:block}
+.layer .dim{font-size:.82rem}
+.pill{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:999px;background:var(--chip);margin:2px 2px;white-space:nowrap}
+.pill.aws{background:var(--l4)} .pill.v{background:var(--l1)} .pill.up{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.legend{font-size:.82rem;color:var(--muted);margin:6px 0}
+footer{margin-top:60px;font-size:.82rem;color:var(--muted)}
+footer a{color:var(--muted)}
+@media (max-width:640px){header h1{font-size:1.5rem} nav.toc{position:static} .layer{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <button class="theme" id="tt" type="button">Theme</button>
+  <h1>Security Landscape Guide</h1>
+  <p>The whole of cybersecurity on a few pages: core ideas, the layers you defend, the domains and teams, the frameworks people actually use, the threats, and where AWS services and third-party products fit. Written by a platform architect learning security, October 2026.</p>
+  <p class="dim" style="font-size:.88rem"><a href="./">← Field Guides</a> · Vendor names are examples of each category, not endorsements or a complete market list.</p>
+  <div class="note" style="font-size:1rem"><b style="font-size:1.25rem;letter-spacing:.04em">🚧 WORK IN PROGRESS · v0.1</b><br>A draft under review by security practitioners. Expect mistakes and missing pieces; corrections are welcome via <a href="https://www.linkedin.com/in/guoxiangng/">LinkedIn</a>.</div>
+</header>
+
+<nav class="toc">
+  <a href="#start">0 · How to read</a>
+  <a href="#basics">1 · Core ideas</a>
+  <a href="#layers">2 · Layers (the big map)</a>
+  <a href="#domains">3 · Domains &amp; teams</a>
+  <a href="#csf">4 · NIST CSF view</a>
+  <a href="#frameworks">5 · Frameworks</a>
+  <a href="#shared">6 · Shared responsibility</a>
+  <a href="#threats">7 · Threats</a>
+  <a href="#attack">8 · An attack, step by step</a>
+  <a href="#soc">9 · How a SOC works</a>
+  <a href="#vuln">10 · Prioritising vulns</a>
+  <a href="#glossary">11 · Glossary</a>
+  <a href="#practice">12 · Practice</a>
+</nav>
+
+<figure style="background:#0d1420;border-color:#0d1420">
+  <a href="./#capability"><img src="capability-map.png" alt="The Security Capability Map poster: eight layers you defend against the NIST functions Identify, Protect, Detect, Respond, Recover, with capabilities, AWS services, threats, owners and frameworks" style="width:100%;height:auto;display:block;border-radius:6px"></a>
+  <figcaption style="color:#93a1b5">Map 1, what you defend: the whole page on one poster. AWS edition. Click to open the full-size version.</figcaption>
+</figure>
+<figure style="background:#0d1420;border-color:#0d1420">
+  <a href="./#lifecycle"><img src="lifecycle-map.png" alt="The Cloud Security Lifecycle Map: seven stages from design to respond and recover, each with a real incident, threats, capabilities, AWS services, open-source tools, platforms that span stages, an AI twist, owners, evidence and frameworks" style="width:100%;height:auto;display:block;border-radius:6px"></a>
+  <figcaption style="color:#93a1b5">Map 2, where it goes wrong: one change from design to production, with the real breach at each stage. Pairs with sections 7 (threats), 8 (the attack walkthrough) and 9 (how a SOC works). Click to open the full-size version.</figcaption>
+</figure>
+
+<!-- 0 -->
+<section id="start">
+<h2>0 · How to use this page</h2>
+<p class="lead">A suggested order if you are coming from cloud, platform or infrastructure work:</p>
+<div class="grid">
+  <div class="card"><h4>Day 1 · Vocabulary and the map</h4><p>Sections 1–3. Be able to place any product or AWS service on the layer map and name its category.</p></div>
+  <div class="card"><h4>Day 2 · Frameworks</h4><p>Sections 4–5. NIST CSF 2.0 and MITRE ATT&amp;CK first; they're the two everyone references.</p></div>
+  <div class="card"><h4>Day 3 · Attacker and responder</h4><p>Sections 7–9. Walk the worked attack until you can tell it aloud: what happened, what fired, what you'd do.</p></div>
+  <div class="card"><h4>Day 4+ · Hands-on</h4><p>Section 12 labs. Real practice beats memorised acronyms.</p></div>
+</div>
+</section>
+
+<!-- 1 -->
+<section id="basics">
+<h2>1 · Core ideas</h2>
+<div class="grid">
+  <div class="card"><h4>CIA triad</h4><p><b>Confidentiality</b> (only the right people see it), <b>Integrity</b> (it isn't tampered with), <b>Availability</b> (it works when needed). Every control protects at least one. Ransomware hits A and often C.</p></div>
+  <div class="card"><h4>Asset, threat, vulnerability, risk</h4><p><b>Asset</b>: what you protect. <b>Threat</b>: who or what could harm it. <b>Vulnerability</b>: the weakness. <b>Exploit</b>: how the weakness is used. <b>Risk</b> ≈ likelihood × impact.</p></div>
+  <div class="card"><h4>AAA</h4><p><b>Authentication</b> (who are you), <b>Authorization</b> (what may you do), <b>Accounting</b> (what did you do: logs). Most cloud breaches are an AAA failure.</p></div>
+  <div class="card"><h4>Least privilege</h4><p>Grant only what a task needs, for only as long as it's needed (just-in-time access). Limits blast radius when, not if, something is compromised.</p></div>
+  <div class="card"><h4>Defence in depth</h4><p>Layers of independent controls so one failure isn't a breach. Section 2 is built on this idea.</p></div>
+  <div class="card"><h4>Zero trust</h4><p>No implicit trust from network location. Verify identity, device and context on every request (NIST SP 800-207). Workload identity (SPIFFE) with default-deny policies is zero trust applied to services and AI agents.</p></div>
+  <div class="card"><h4>Prevent, detect, respond</h4><p>Prevention always fails eventually, so you also need detection (to know) and response (to limit damage). An MDR team lives in detect and respond.</p></div>
+  <div class="card"><h4>Assume breach</h4><p>Design and monitor as if an attacker is already inside. Drives segmentation, logging and rehearsed incident response.</p></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="layers">
+<h2>2 · The layers: what you defend, against what, with what</h2>
+<p class="lead">Read top (outermost) to bottom (the data you ultimately protect). Governance wraps everything; monitoring and response cut across every layer.</p>
+
+<figure>
+<svg viewBox="0 0 980 520" role="img" aria-label="Defence in depth layers from governance and edge down to data, with monitoring and response as a cross-cutting band">
+  <rect x="10" y="10" width="960" height="500" rx="12" class="zone"/>
+  <text x="26" y="34" class="tb">Governance, risk &amp; compliance — policies, standards, audits, training, third-party risk</text>
+  <!-- layers -->
+  <rect x="40" y="50" width="720" height="48" rx="8" class="l1"/><text x="56" y="72" class="tb">Edge / perimeter</text><text x="56" y="90" class="ts">DDoS, bots, web attacks · WAF, CDN, DDoS protection, DNS security</text>
+  <rect x="70" y="106" width="660" height="48" rx="8" class="l2"/><text x="86" y="128" class="tb">Network</text><text x="86" y="146" class="ts">Lateral movement, exposure · segmentation, firewalls, private connectivity, flow logs</text>
+  <rect x="100" y="162" width="600" height="48" rx="8" class="l3"/><text x="116" y="184" class="tb">Identity &amp; access</text><text x="116" y="202" class="ts">Credential theft, privilege abuse · SSO, MFA, PAM, least privilege</text>
+  <rect x="130" y="218" width="540" height="48" rx="8" class="l4"/><text x="146" y="240" class="tb">Endpoint / host / compute</text><text x="146" y="258" class="ts">Malware, exploits · hardening, patching, EDR</text>
+  <rect x="160" y="274" width="480" height="48" rx="8" class="l5"/><text x="176" y="296" class="tb">Containers &amp; Kubernetes</text><text x="176" y="314" class="ts">Escapes, bad images · admission, runtime sensors</text>
+  <rect x="190" y="330" width="420" height="48" rx="8" class="l1"/><text x="206" y="352" class="tb">Application &amp; API</text><text x="206" y="370" class="ts">Injection, broken auth · AppSec testing, API security</text>
+  <rect x="220" y="386" width="360" height="48" rx="8" class="l2"/><text x="236" y="408" class="tb">Data</text><text x="236" y="426" class="ts">Exfiltration, ransomware · encryption, DLP, backups</text>
+  <rect x="250" y="442" width="300" height="48" rx="8" class="hl"/><text x="266" y="464" class="tb">AI systems (new layer)</text><text x="266" y="482" class="ts">Prompt injection, model abuse · guardrails</text>
+  <!-- cross-cutting -->
+  <rect x="790" y="50" width="160" height="440" rx="10" class="hl"/>
+  <text x="870" y="80" text-anchor="middle" class="tb">Monitor, detect</text>
+  <text x="870" y="98" text-anchor="middle" class="tb">&amp; respond</text>
+  <text x="870" y="130" text-anchor="middle" class="t">Logs &amp; telemetry</text>
+  <text x="870" y="152" text-anchor="middle" class="t">SIEM / data lake</text>
+  <text x="870" y="174" text-anchor="middle" class="t">XDR / CDR</text>
+  <text x="870" y="196" text-anchor="middle" class="t">Threat intel</text>
+  <text x="870" y="218" text-anchor="middle" class="t">Threat hunting</text>
+  <text x="870" y="240" text-anchor="middle" class="t">SOAR</text>
+  <text x="870" y="262" text-anchor="middle" class="t">Incident response</text>
+  <text x="870" y="284" text-anchor="middle" class="t">Forensics</text>
+  <text x="870" y="330" text-anchor="middle" class="ts">applies to every</text>
+  <text x="870" y="346" text-anchor="middle" class="ts">layer on the left</text>
+  <text x="870" y="400" text-anchor="middle" class="tb">← MDR lives here</text>
+</svg>
+<figcaption>Defence in depth. An attacker has to get through several layers; a defender needs visibility in all of them. Detail for each layer is in the table below.</figcaption>
+</figure>
+
+<p class="legend"><span class="pill aws">AWS service</span> <span class="pill v">Third-party example</span></p>
+<div class="layers">
+  <div class="layer" style="border-left:5px solid var(--muted)"><div><b>Governance (GRC)</b><span class="dim">Is the security programme defined, measured and compliant?</span></div><div><span class="pill aws">Organizations + SCPs/RCPs</span><span class="pill aws">Control Tower</span><span class="pill aws">Config conformance packs</span><span class="pill aws">Audit Manager</span><span class="pill aws">Artifact</span><span class="pill v">ServiceNow GRC</span><span class="pill v">Vanta</span><span class="pill v">Drata</span><span class="pill v">OneTrust</span></div></div>
+  <div class="layer"><div><b>Edge / perimeter</b><span class="dim">Threats: DDoS, bots, OWASP web attacks, DNS abuse</span></div><div><span class="pill aws">CloudFront</span><span class="pill aws">AWS WAF</span><span class="pill aws">Shield / Shield Advanced</span><span class="pill aws">Route 53 Resolver DNS Firewall</span><span class="pill aws">Firewall Manager</span><span class="pill v">Cloudflare</span><span class="pill v">Akamai</span><span class="pill v">F5</span><span class="pill v">Imperva</span></div></div>
+  <div class="layer"><div><b>Network</b><span class="dim">Threats: exposure, lateral movement, C2 traffic, exfiltration</span></div><div><span class="pill aws">VPC, subnets</span><span class="pill aws">Security groups, NACLs</span><span class="pill aws">Network Firewall</span><span class="pill aws">PrivateLink</span><span class="pill aws">Verified Access (ZTNA)</span><span class="pill aws">VPC Flow Logs</span><span class="pill v">Palo Alto NGFW</span><span class="pill v">Fortinet</span><span class="pill v">Check Point</span><span class="pill v">Zscaler / Netskope (SASE)</span><span class="pill v">Darktrace / Vectra (NDR)</span></div></div>
+  <div class="layer"><div><b>Identity &amp; access</b><span class="dim">Threats: phishing, leaked keys, privilege escalation, MFA fatigue</span></div><div><span class="pill aws">IAM</span><span class="pill aws">IAM Identity Center</span><span class="pill aws">STS</span><span class="pill aws">Cognito</span><span class="pill aws">IAM Access Analyzer</span><span class="pill aws">Verified Permissions</span><span class="pill v">Okta</span><span class="pill v">Microsoft Entra ID</span><span class="pill v">Ping</span><span class="pill v">CyberArk (PAM)</span><span class="pill v">SailPoint (IGA)</span><span class="pill v">Keycloak (OSS)</span></div></div>
+  <div class="layer"><div><b>Endpoint / host</b><span class="dim">Threats: malware, ransomware, exploits, cryptominers</span></div><div><span class="pill aws">Inspector</span><span class="pill aws">Systems Manager (patching)</span><span class="pill aws">GuardDuty Runtime + Malware Protection</span><span class="pill aws">EC2 Image Builder</span><span class="pill v">CrowdStrike Falcon</span><span class="pill v">SentinelOne</span><span class="pill v">Microsoft Defender</span><span class="pill v">TrendAI Vision One</span><span class="pill v">Tenable / Qualys</span></div></div>
+  <div class="layer"><div><b>Containers &amp; Kubernetes</b><span class="dim">Threats: vulnerable images, privileged pods, escapes, stolen SA tokens</span></div><div><span class="pill aws">EKS (Pod Identity, audit logs)</span><span class="pill aws">ECR + Inspector scanning</span><span class="pill aws">GuardDuty EKS</span><span class="pill v">Upwind</span><span class="pill v">Wiz</span><span class="pill v">Sysdig</span><span class="pill v">Aqua</span><span class="pill v">Falco / Kyverno (OSS)</span></div></div>
+  <div class="layer"><div><b>Application &amp; API</b><span class="dim">Threats: injection, broken access control, vulnerable dependencies, API abuse</span></div><div><span class="pill aws">API Gateway</span><span class="pill aws">AWS WAF</span><span class="pill aws">Inspector code security</span><span class="pill aws">Secrets Manager</span><span class="pill v">Snyk</span><span class="pill v">Checkmarx</span><span class="pill v">Veracode</span><span class="pill v">GitHub Advanced Security</span><span class="pill v">Semgrep</span><span class="pill v">Salt / Traceable (API)</span></div></div>
+  <div class="layer"><div><b>Data</b><span class="dim">Threats: exfiltration, exposure, ransomware, insider misuse</span></div><div><span class="pill aws">KMS</span><span class="pill aws">CloudHSM</span><span class="pill aws">Macie</span><span class="pill aws">S3 Block Public Access</span><span class="pill aws">Backup (vault lock)</span><span class="pill aws">ACM / Private CA</span><span class="pill v">Varonis</span><span class="pill v">Cyera</span><span class="pill v">BigID</span><span class="pill v">Microsoft Purview (DLP)</span></div></div>
+  <div class="layer"><div><b>AI systems</b><span class="dim">Threats: prompt injection, data leakage via the model, excessive agency, model supply chain</span></div><div><span class="pill aws">Bedrock Guardrails</span><span class="pill aws">Security Hub CSPM AI controls</span><span class="pill v">F5 AI Guardrails (CalypsoAI)</span><span class="pill v">Lakera</span><span class="pill v">HiddenLayer</span><span class="pill v">Protect AI</span></div></div>
+  <div class="layer" style="border-left:5px solid var(--accent)"><div><b>Detect &amp; respond (all layers)</b><span class="dim">Threats: anything that got past prevention</span></div><div><span class="pill aws">CloudTrail</span><span class="pill aws">GuardDuty</span><span class="pill aws">Security Hub</span><span class="pill aws">Detective</span><span class="pill aws">Security Lake (OCSF)</span><span class="pill aws">EventBridge</span><span class="pill aws">Security Incident Response</span><span class="pill v">Splunk</span><span class="pill v">Microsoft Sentinel</span><span class="pill v">Google SecOps</span><span class="pill v">Elastic</span><span class="pill v">Cortex XSOAR / Tines (SOAR)</span><span class="pill v">Recorded Future (TI)</span></div></div>
+</div>
+<div class="note">Product categories blur: CrowdStrike, Palo Alto and TrendAI each sell across most layers, and every CNAPP covers posture plus runtime. Learn the <em>category</em>; the logos follow.</div>
+</section>
+
+<!-- 3 -->
+<section id="domains">
+<h2>3 · Domains and teams: how the industry divides the work</h2>
+<p class="lead">Job titles and org charts follow these domains.</p>
+<div class="tbl"><table>
+<thead><tr><th>Domain</th><th>Purpose</th><th>Typical roles</th><th>Product categories</th></tr></thead>
+<tbody>
+<tr><td class="k">Governance, Risk &amp; Compliance</td><td>Policies, risk register, audits, regulatory compliance</td><td>GRC analyst, CISO office, auditor</td><td>GRC platforms, compliance automation</td></tr>
+<tr><td class="k">Security architecture &amp; engineering</td><td>Design controls into systems</td><td>Security architect, security engineer</td><td>Everything, as designs</td></tr>
+<tr><td class="k">Identity &amp; access management</td><td>Who gets access to what, and proving it</td><td>IAM engineer</td><td>IdP, PAM, IGA, CIEM</td></tr>
+<tr><td class="k">Network security</td><td>Segmentation, perimeter, secure remote access</td><td>Network security engineer</td><td>NGFW, SASE/SSE, ZTNA, NDR, WAF</td></tr>
+<tr><td class="k">Endpoint security</td><td>Laptops and servers</td><td>Endpoint engineer</td><td>EPP, EDR, MDM</td></tr>
+<tr><td class="k">Cloud security</td><td>Posture and runtime for cloud and Kubernetes</td><td>Cloud security engineer</td><td>CNAPP (CSPM, CWPP, CIEM, CDR)</td></tr>
+<tr><td class="k">Application security</td><td>Secure software from code to production</td><td>AppSec / product security engineer</td><td>SAST, SCA, DAST, ASPM, API security</td></tr>
+<tr><td class="k">Data security &amp; privacy</td><td>Find, classify and protect sensitive data</td><td>Data protection officer, privacy engineer</td><td>DSPM, DLP, encryption, tokenisation</td></tr>
+<tr><td class="k">Security operations (SecOps / SOC)</td><td>Monitor, detect, triage, respond</td><td>SOC analyst T1–T3, detection engineer, incident responder, threat hunter</td><td>SIEM, SOAR, XDR, TI</td></tr>
+<tr><td class="k">Threat intelligence</td><td>Know adversaries and their TTPs</td><td>CTI analyst</td><td>TI platforms and feeds</td></tr>
+<tr><td class="k">Offensive security</td><td>Find weaknesses before attackers do</td><td>Pentester, red team, bug bounty</td><td>Scanners, BAS, ASM</td></tr>
+<tr><td class="k">Vulnerability management</td><td>Find, rank and drive fixes</td><td>VM analyst</td><td>Scanners, VM/RBVM platforms</td></tr>
+<tr><td class="k">OT / IoT security</td><td>Industrial and device networks</td><td>OT security engineer</td><td>OT NDR, asset discovery</td></tr>
+<tr><td class="k">AI security</td><td>Secure AI systems; use AI in defence</td><td>AI security engineer, AI red team</td><td>AI-SPM, AI-DR, guardrails, AI red-teaming</td></tr>
+</tbody></table></div>
+<h3>A typical security organisation</h3>
+<figure>
+<svg viewBox="0 0 980 360" role="img" aria-label="Typical security org chart: CISO over GRC, architecture, security engineering, security operations and offensive security, with MDR provider and auditors outside">
+  <rect x="400" y="12" width="180" height="56" rx="10" class="hl"/><text x="490" y="38" text-anchor="middle" class="tb">CISO</text><text x="490" y="57" text-anchor="middle" class="ts">risk owner, reports to board</text>
+  <path d="M490 68 V96 M106 96 H874 M106 96 V116 M298 96 V116 M490 96 V116 M682 96 V116 M874 96 V116" class="ln"/>
+  <g>
+    <rect x="16" y="116" width="180" height="200" rx="10" class="l1"/><text x="106" y="142" text-anchor="middle" class="tb">GRC &amp; privacy</text>
+    <text x="30" y="170" class="t">GRC / risk analyst</text><text x="30" y="192" class="t">Compliance lead</text><text x="30" y="214" class="t">Data protection officer</text><text x="30" y="236" class="t">Awareness lead</text>
+    <text x="30" y="290" class="ts">Govern</text>
+
+    <rect x="208" y="116" width="180" height="200" rx="10" class="l2"/><text x="298" y="142" text-anchor="middle" class="tb">Architecture</text>
+    <text x="222" y="170" class="t">Security architect</text><text x="222" y="192" class="t">Cloud security architect</text><text x="222" y="214" class="t">Threat modelling</text>
+    <text x="222" y="290" class="ts">Identify · Protect (design)</text>
+
+    <rect x="400" y="116" width="180" height="200" rx="10" class="l3"/><text x="490" y="142" text-anchor="middle" class="tb">Security engineering</text>
+    <text x="414" y="170" class="t">IAM engineer</text><text x="414" y="192" class="t">Network security</text><text x="414" y="214" class="t">Cloud security</text><text x="414" y="236" class="t">AppSec / product sec</text><text x="414" y="258" class="t">AI security</text>
+    <text x="414" y="290" class="ts">Protect (build &amp; run)</text>
+
+    <rect x="592" y="116" width="180" height="200" rx="10" class="hl"/><text x="682" y="142" text-anchor="middle" class="tb">Security operations</text>
+    <text x="606" y="170" class="t">SOC analyst T1–T2</text><text x="606" y="192" class="t">Incident responder (T3)</text><text x="606" y="214" class="t">Detection engineer</text><text x="606" y="236" class="t">Threat hunter / CTI</text>
+    <text x="606" y="290" class="ts">Detect · Respond · Recover</text>
+
+    <rect x="784" y="116" width="180" height="200" rx="10" class="l4"/><text x="874" y="142" text-anchor="middle" class="tb">Offensive &amp; assurance</text>
+    <text x="798" y="170" class="t">Vulnerability mgmt</text><text x="798" y="192" class="t">Penetration tester</text><text x="798" y="214" class="t">Red team</text><text x="798" y="236" class="t">Bug bounty program</text>
+    <text x="798" y="290" class="ts">Identify (test it)</text>
+  </g>
+  <rect x="592" y="326" width="180" height="28" rx="14" class="box" stroke-dasharray="5 4"/><text x="682" y="345" text-anchor="middle" class="t">External: MDR provider</text>
+  <rect x="16" y="326" width="180" height="28" rx="14" class="box" stroke-dasharray="5 4"/><text x="106" y="345" text-anchor="middle" class="t">External: auditors</text>
+</svg>
+<figcaption>Smaller companies merge boxes; many outsource the right-hand SOC work to an MDR provider. An MDR provider acts as the customer's extended SOC.</figcaption>
+</figure>
+
+<h3>Roles: who does the work, and in which tools</h3>
+<p class="lead" style="margin-top:0">Titles vary by company; this follows common industry usage and lines up roughly with ENISA's 12 ECSF role profiles and the US NICE Framework.</p>
+<div class="tbl"><table>
+<thead><tr><th>Role</th><th>Main question they own</th><th>Domains</th><th>Frameworks they reach for</th><th>Tools they live in</th><th>Layers (section 2)</th></tr></thead>
+<tbody>
+<tr><td class="k">CISO</td><td>Are we managing cyber risk to an acceptable level, and can we prove it?</td><td>GRC, all</td><td>NIST CSF, ISO 27001, MAS TRM, risk registers</td><td>GRC platform, board dashboards</td><td>Governance (all)</td></tr>
+<tr><td class="k">Security architect</td><td>Is security designed in, and do the controls fit together?</td><td>Architecture, cloud, IAM, network</td><td>Zero Trust, AWS SRA / Well-Architected, STRIDE, CIS Benchmarks</td><td>Design docs, IaC, CSPM findings</td><td>All, by design</td></tr>
+<tr><td class="k">GRC / risk analyst</td><td>Do we meet our obligations?</td><td>GRC</td><td>ISO 27001, SOC 2, PCI DSS, MAS TRM, PDPA</td><td>GRC platform, Audit Manager, Config</td><td>Governance</td></tr>
+<tr><td class="k">Cloud security engineer</td><td>Is the cloud estate configured and running safely?</td><td>Cloud, IAM, containers</td><td>CIS Benchmarks, AWS SRA, CKS topics</td><td><b>CNAPP (e.g. Upwind, Wiz)</b>, Security Hub, GuardDuty, Kyverno</td><td>Network → data</td></tr>
+<tr><td class="k">IAM engineer</td><td>Does everyone and everything have exactly the access it needs?</td><td>IAM</td><td>Zero Trust, least privilege</td><td>Okta/Entra, CyberArk, SailPoint, IAM Access Analyzer</td><td>Identity</td></tr>
+<tr><td class="k">Network security engineer</td><td>Can traffic only go where it should?</td><td>Network</td><td>Zero Trust, CIS</td><td>NGFW, SASE, WAF, Network Firewall</td><td>Edge, network</td></tr>
+<tr><td class="k">AppSec / product security engineer</td><td>Is the software we ship secure?</td><td>AppSec, supply chain</td><td>OWASP Top 10 / API / ASVS, SLSA, SSDF</td><td>Snyk, Semgrep, GitHub Advanced Security, CNAPP code scanning</td><td>Application, containers</td></tr>
+<tr><td class="k">Vulnerability management analyst</td><td>Which weaknesses do we fix first?</td><td>Vuln mgmt</td><td>CVSS, EPSS, KEV, SSVC</td><td>Tenable, Qualys, Inspector, CNAPP vulnerability views</td><td>Host, containers, app</td></tr>
+<tr><td class="k">SOC analyst (Tier 1–2)</td><td>Is this alert real, and how bad is it?</td><td>SecOps</td><td>MITRE ATT&amp;CK, playbooks</td><td>SIEM, XDR, CNAPP / CDR consoles</td><td>Detect &amp; respond</td></tr>
+<tr><td class="k">Incident responder (Tier 3 / IR)</td><td>What happened, how far did it go, and how do we stop it?</td><td>SecOps, forensics</td><td>NIST 800-61, PICERL, ATT&amp;CK</td><td>SIEM, EDR/CDR, forensic tooling, CloudTrail</td><td>Detect &amp; respond</td></tr>
+<tr><td class="k">Detection engineer</td><td>Do our detections catch real attacks without drowning us?</td><td>SecOps</td><td>ATT&amp;CK, Sigma, Pyramid of Pain</td><td>SIEM rules, Falco/sensor rules, test harnesses</td><td>Detect</td></tr>
+<tr><td class="k">Threat hunter / CTI analyst</td><td>Who is targeting us, and are they already here?</td><td>Threat intel, SecOps</td><td>ATT&amp;CK, Diamond Model</td><td>TI platforms, SIEM queries</td><td>Detect</td></tr>
+<tr><td class="k">Penetration tester / red team</td><td>Can we actually be broken into?</td><td>Offensive</td><td>ATT&amp;CK, OWASP testing guides</td><td>Burp, Metasploit, cloud attack tools, BAS</td><td>All, from outside</td></tr>
+<tr><td class="k">AI security engineer</td><td>Are our models and agents safe to run, and safe from misuse?</td><td>AI security</td><td>OWASP LLM Top 10, MITRE ATLAS, NIST AI RMF</td><td>Guardrails, AI red-team tools, AI-SPM</td><td>AI systems</td></tr>
+<tr><td class="k">MDR security engineer</td><td>For many customers at once: what's happening, what matters, what should they do?</td><td>SecOps + cloud</td><td>ATT&amp;CK, NIST 800-61, AWS IR guide</td><td>The provider's CNAPP / CDR platform, customer's cloud logs</td><td>Detect &amp; respond, across all layers</td></tr>
+</tbody></table></div>
+
+<div class="card"><h4>The CISSP view (another way to slice the same thing)</h4><p>The CISSP exam's 8 domains are a common vocabulary: (1) Security &amp; Risk Management, (2) Asset Security, (3) Security Architecture &amp; Engineering, (4) Communication &amp; Network Security, (5) Identity &amp; Access Management, (6) Security Assessment &amp; Testing, (7) Security Operations, (8) Software Development Security. ISC2's CCSP covers the cloud slice of these.</p></div>
+</section>
+
+<!-- 4 -->
+<section id="csf">
+<h2>4 · NIST CSF 2.0: the "what does a security programme do" view</h2>
+<p class="lead">NIST Cybersecurity Framework 2.0 (2024) has six functions. It's the most common way to present a security programme to executives, and every product can be placed in one or more functions.</p>
+<figure>
+<svg viewBox="0 0 980 190" role="img" aria-label="NIST CSF 2.0 functions: Govern surrounding Identify, Protect, Detect, Respond, Recover">
+  <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>
+  <rect x="10" y="10" width="960" height="170" rx="14" class="zone"/>
+  <text x="490" y="36" text-anchor="middle" class="tb">GOVERN — strategy, roles, policy, risk appetite, supply-chain risk (wraps everything)</text>
+  <rect x="30" y="60" width="170" height="100" rx="10" class="l1"/><text x="115" y="96" text-anchor="middle" class="tb">IDENTIFY</text><text x="115" y="118" text-anchor="middle" class="ts">know assets &amp; risks</text><text x="115" y="136" text-anchor="middle" class="ts">inventory, posture</text>
+  <rect x="220" y="60" width="170" height="100" rx="10" class="l2"/><text x="305" y="96" text-anchor="middle" class="tb">PROTECT</text><text x="305" y="118" text-anchor="middle" class="ts">prevent</text><text x="305" y="136" text-anchor="middle" class="ts">IAM, encryption, hardening</text>
+  <rect x="410" y="60" width="170" height="100" rx="10" class="hl"/><text x="495" y="96" text-anchor="middle" class="tb">DETECT</text><text x="495" y="118" text-anchor="middle" class="ts">notice attacks</text><text x="495" y="136" text-anchor="middle" class="ts">sensors, logs, SIEM</text>
+  <rect x="600" y="60" width="170" height="100" rx="10" class="hl"/><text x="685" y="96" text-anchor="middle" class="tb">RESPOND</text><text x="685" y="118" text-anchor="middle" class="ts">contain &amp; eradicate</text><text x="685" y="136" text-anchor="middle" class="ts">IR, SOAR, comms</text>
+  <rect x="790" y="60" width="160" height="100" rx="10" class="l4"/><text x="870" y="96" text-anchor="middle" class="tb">RECOVER</text><text x="870" y="118" text-anchor="middle" class="ts">restore &amp; learn</text><text x="870" y="136" text-anchor="middle" class="ts">backups, post-mortem</text>
+  <line x1="200" y1="110" x2="216" y2="110" class="ln" marker-end="url(#a1)"/><line x1="390" y1="110" x2="406" y2="110" class="ln" marker-end="url(#a1)"/><line x1="580" y1="110" x2="596" y2="110" class="ln" marker-end="url(#a1)"/><line x1="770" y1="110" x2="786" y2="110" class="ln" marker-end="url(#a1)"/>
+</svg>
+<figcaption>Highlighted: Detect and Respond, where an MDR team spends its time.</figcaption>
+</figure>
+<div class="tbl"><table>
+<thead><tr><th>Function</th><th>Key activities</th><th>AWS services</th><th>Product categories</th></tr></thead>
+<tbody>
+<tr><td class="k">Govern</td><td>Policy, roles, risk strategy, supplier risk</td><td>Organizations, Control Tower, Audit Manager, Artifact</td><td>GRC, TPRM</td></tr>
+<tr><td class="k">Identify</td><td>Asset inventory, risk assessment, vulnerability discovery</td><td>Config, Resource Explorer, Inspector, Security Hub CSPM, Macie, Access Analyzer</td><td>CSPM, ASM, VM, DSPM, CIEM</td></tr>
+<tr><td class="k">Protect</td><td>Access control, encryption, hardening, training, secure SDLC</td><td>IAM, KMS, WAF, Shield, Network Firewall, Secrets Manager, SSM</td><td>IdP, PAM, NGFW, WAF, EPP, SAST/SCA, admission control</td></tr>
+<tr><td class="k">Detect</td><td>Continuous monitoring, anomaly detection, alert analysis</td><td>GuardDuty, CloudTrail, Security Hub, Security Lake, Detective</td><td>SIEM, EDR/XDR, CDR, NDR, UEBA</td></tr>
+<tr><td class="k">Respond</td><td>Triage, containment, eradication, communication, analysis</td><td>EventBridge + Lambda/SSM automation, Security Incident Response, Detective</td><td>SOAR, IR retainers, MDR</td></tr>
+<tr><td class="k">Recover</td><td>Restore, validate, improve</td><td>AWS Backup, Elastic Disaster Recovery</td><td>Backup, DR</td></tr>
+</tbody></table></div>
+</section>
+
+<!-- 5 -->
+<section id="frameworks">
+<h2>5 · Frameworks to learn, grouped by what they're for</h2>
+<figure>
+<svg viewBox="0 0 980 440" role="img" aria-label="Frameworks placed by attacker vs defender view and strategic vs operational level">
+  <rect x="60" y="20" width="900" height="380" rx="10" class="zone"/>
+  <line x1="510" y1="30" x2="510" y2="390" class="ln" stroke-dasharray="4 5"/>
+  <line x1="70" y1="210" x2="950" y2="210" class="ln" stroke-dasharray="4 5"/>
+  <text x="80" y="48" class="ts">ATTACKER VIEW · STRATEGIC</text>
+  <text x="940" y="48" text-anchor="end" class="ts">DEFENDER VIEW · STRATEGIC</text>
+  <text x="80" y="388" class="ts">ATTACKER VIEW · OPERATIONAL</text>
+  <text x="940" y="388" text-anchor="end" class="ts">DEFENDER VIEW · OPERATIONAL</text>
+  <text x="30" y="215" class="tb" transform="rotate(-90 30 215)" text-anchor="middle">strategic ↑ · ↓ hands-on</text>
+  <text x="510" y="430" class="tb" text-anchor="middle">← how attackers work · how defenders organise →</text>
+  <!-- attacker strategic -->
+  <rect x="110" y="80" width="170" height="40" rx="20" class="l4"/><text x="195" y="105" text-anchor="middle" class="t">Cyber Kill Chain</text>
+  <rect x="300" y="120" width="160" height="40" rx="20" class="l4"/><text x="380" y="145" text-anchor="middle" class="t">Diamond Model</text>
+  <!-- defender strategic -->
+  <rect x="560" y="64" width="150" height="40" rx="20" class="hl"/><text x="635" y="89" text-anchor="middle" class="tb">NIST CSF 2.0</text>
+  <rect x="730" y="64" width="190" height="40" rx="20" class="l1"/><text x="825" y="89" text-anchor="middle" class="t">ISO 27001 · SOC 2</text>
+  <rect x="560" y="116" width="200" height="40" rx="20" class="l1"/><text x="660" y="141" text-anchor="middle" class="t">Cyber Defense Matrix</text>
+  <rect x="780" y="116" width="140" height="40" rx="20" class="l1"/><text x="850" y="141" text-anchor="middle" class="t">MAS TRM</text>
+  <rect x="560" y="166" width="190" height="34" rx="17" class="l1"/><text x="655" y="188" text-anchor="middle" class="t">Zero Trust (800-207)</text>
+  <rect x="770" y="166" width="150" height="34" rx="17" class="l1"/><text x="845" y="188" text-anchor="middle" class="t">NIST AI RMF</text>
+  <!-- middle -->
+  <rect x="420" y="190" width="180" height="40" rx="20" class="l5"/><text x="510" y="215" text-anchor="middle" class="t">STRIDE (threat model)</text>
+  <rect x="300" y="240" width="170" height="40" rx="20" class="l4"/><text x="385" y="265" text-anchor="middle" class="t">Pyramid of Pain</text>
+  <!-- attacker operational -->
+  <rect x="100" y="290" width="190" height="44" rx="22" class="hl"/><text x="195" y="317" text-anchor="middle" class="tb">MITRE ATT&amp;CK</text>
+  <rect x="300" y="300" width="160" height="40" rx="20" class="l4"/><text x="380" y="325" text-anchor="middle" class="t">MITRE ATLAS (AI)</text>
+  <rect x="110" y="344" width="180" height="34" rx="17" class="l4"/><text x="200" y="366" text-anchor="middle" class="t">Atomic Red Team</text>
+  <!-- defender operational -->
+  <rect x="560" y="240" width="200" height="44" rx="22" class="hl"/><text x="660" y="267" text-anchor="middle" class="tb">NIST 800-61 / PICERL</text>
+  <rect x="780" y="240" width="150" height="40" rx="20" class="l2"/><text x="855" y="265" text-anchor="middle" class="t">CIS Benchmarks</text>
+  <rect x="560" y="296" width="150" height="40" rx="20" class="l2"/><text x="635" y="321" text-anchor="middle" class="t">CIS Controls</text>
+  <rect x="725" y="296" width="205" height="40" rx="20" class="l2"/><text x="827" y="321" text-anchor="middle" class="t">OWASP Top 10s (web, API, LLM)</text>
+  <rect x="560" y="344" width="130" height="34" rx="17" class="l2"/><text x="625" y="366" text-anchor="middle" class="t">Sigma rules</text>
+  <rect x="705" y="344" width="110" height="34" rx="17" class="l2"/><text x="760" y="366" text-anchor="middle" class="t">SLSA</text>
+</svg>
+<figcaption>Where each framework sits. Bold ones are the ones you will hear most in cloud security work: ATT&amp;CK, NIST CSF and NIST 800-61/PICERL; for AI systems, add the OWASP LLM Top 10.</figcaption>
+</figure>
+<p class="lead">Stars = how often it comes up in cloud security and detection work. You don't need to memorise them; you need to know what each is for and use the right one in conversation.</p>
+<div class="tbl"><table>
+<thead><tr><th>Framework</th><th>Type</th><th>What it gives you</th><th>Use it when</th><th>Priority</th></tr></thead>
+<tbody>
+<tr><td colspan="5" style="background:var(--chip)"><b>Attacker and detection</b></td></tr>
+<tr><td class="k">MITRE ATT&amp;CK</td><td>Knowledge base</td><td>14 tactics (the "why") and hundreds of techniques (the "how"), with Enterprise, Cloud and Containers matrices</td><td>Describing an attack, mapping detection coverage, writing reports</td><td class="stars">★★★</td></tr>
+<tr><td class="k">Cyber Kill Chain (Lockheed Martin)</td><td>Attack model</td><td>7 stages: recon → weaponise → deliver → exploit → install → C2 → actions</td><td>Explaining "break the chain early" to non-specialists</td><td class="stars">★★</td></tr>
+<tr><td class="k">Pyramid of Pain</td><td>Detection model</td><td>Hashes and IPs (trivial for attackers to change) up to TTPs (hard to change)</td><td>Arguing for behaviour-based detection over IOC lists</td><td class="stars">★★</td></tr>
+<tr><td class="k">Diamond Model</td><td>Analysis model</td><td>Adversary, capability, infrastructure, victim</td><td>Threat intel and attribution discussions</td><td class="stars">★</td></tr>
+<tr><td class="k">Sigma</td><td>Detection format</td><td>Vendor-neutral detection rules that convert to SIEM queries</td><td>Detection-as-code conversations</td><td class="stars">★★</td></tr>
+<tr><td colspan="5" style="background:var(--chip)"><b>Incident response</b></td></tr>
+<tr><td class="k">NIST SP 800-61 (Rev. 3)</td><td>IR guide</td><td>Incident response mapped onto CSF 2.0 functions; the classic lifecycle is prepare → detect &amp; analyse → contain, eradicate &amp; recover → post-incident</td><td>Describing how you'd run an incident</td><td class="stars">★★★</td></tr>
+<tr><td class="k">SANS PICERL</td><td>IR lifecycle</td><td>Preparation, Identification, Containment, Eradication, Recovery, Lessons learned</td><td>Same purpose; many SOCs use this wording</td><td class="stars">★★★</td></tr>
+<tr><td class="k">AWS Security Incident Response Guide</td><td>Cloud IR</td><td>Cloud-specific prep, isolation and forensics on AWS</td><td>"How would you respond to a leaked access key?"</td><td class="stars">★★★</td></tr>
+<tr><td colspan="5" style="background:var(--chip)"><b>Programme and controls</b></td></tr>
+<tr><td class="k">NIST CSF 2.0</td><td>Programme framework</td><td>Govern, Identify, Protect, Detect, Respond, Recover (section 4)</td><td>Structuring any security conversation</td><td class="stars">★★★</td></tr>
+<tr><td class="k">CIS Controls v8.1</td><td>Prioritised controls</td><td>18 controls in implementation groups IG1–IG3; a practical "do these first" list</td><td>Advising a customer on what to fix first</td><td class="stars">★★</td></tr>
+<tr><td class="k">CIS Benchmarks</td><td>Configuration baselines</td><td>Hardening checklists for AWS, Kubernetes, Linux and more</td><td>What CSPM/KSPM checks are built from</td><td class="stars">★★★</td></tr>
+<tr><td class="k">ISO/IEC 27001 / 27002</td><td>Certifiable standard</td><td>Information security management system plus control catalogue</td><td>Enterprise customers' compliance needs</td><td class="stars">★</td></tr>
+<tr><td class="k">NIST SP 800-53</td><td>Control catalogue</td><td>Large, detailed control set (US federal)</td><td>US federal and regulated work</td><td class="stars">★</td></tr>
+<tr><td class="k">SOC 2 / PCI DSS 4.0</td><td>Audit / industry standard</td><td>Service-organisation trust criteria / payment card rules</td><td>SaaS customers, fintech and payments customers</td><td class="stars">★</td></tr>
+<tr><td colspan="5" style="background:var(--chip)"><b>Architecture</b></td></tr>
+<tr><td class="k">Shared responsibility model</td><td>Cloud model</td><td>What the provider secures vs. what you secure (section 6)</td><td>Every cloud conversation</td><td class="stars">★★★</td></tr>
+<tr><td class="k">Zero Trust (NIST SP 800-207)</td><td>Architecture</td><td>Policy decision and enforcement points; never trust by network location</td><td>Identity-first design discussions</td><td class="stars">★★</td></tr>
+<tr><td class="k">AWS Well-Architected Security Pillar / AWS SRA</td><td>Cloud reference</td><td>Best practices and a reference multi-account security architecture</td><td>Proactive reviews of customer AWS environments</td><td class="stars">★★★</td></tr>
+<tr><td class="k">STRIDE</td><td>Threat modelling</td><td>Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege</td><td>Reviewing a design for what could go wrong</td><td class="stars">★★</td></tr>
+<tr><td colspan="5" style="background:var(--chip)"><b>Application and supply chain</b></td></tr>
+<tr><td class="k">OWASP Top 10:2025</td><td>Web risks</td><td>A01 Broken Access Control, A02 Security Misconfiguration, A03 Software Supply Chain Failures, A04 Cryptographic Failures, A05 Injection, A06 Insecure Design, A07 Authentication Failures, A08 Software or Data Integrity Failures, A09 Security Logging &amp; Alerting Failures, A10 Mishandling of Exceptional Conditions</td><td>Any AppSec discussion</td><td class="stars">★★</td></tr>
+<tr><td class="k">OWASP API Security Top 10 (2023)</td><td>API risks</td><td>Led by BOLA (broken object-level authorisation) and broken authentication</td><td>API security reviews</td><td class="stars">★★</td></tr>
+<tr><td class="k">SLSA / NIST SSDF (SP 800-218)</td><td>Supply chain</td><td>Build provenance levels / secure development practices</td><td>Supply-chain incident discussions</td><td class="stars">★</td></tr>
+<tr><td colspan="5" style="background:var(--chip)"><b>AI</b></td></tr>
+<tr><td class="k">OWASP Top 10 for LLM Applications (2025)</td><td>AI risks</td><td>Prompt injection, sensitive information disclosure, supply chain, excessive agency, and more</td><td>AI security reviews</td><td class="stars">★★★</td></tr>
+<tr><td class="k">MITRE ATLAS</td><td>AI attack knowledge base</td><td>ATT&amp;CK-style tactics and techniques for attacks on AI systems</td><td>Mapping AI attacks the way ATT&amp;CK maps others</td><td class="stars">★★</td></tr>
+<tr><td class="k">NIST AI RMF / ISO/IEC 42001</td><td>AI governance</td><td>AI risk management framework / certifiable AI management system</td><td>Governance-level AI discussions</td><td class="stars">★</td></tr>
+<tr><td colspan="5" style="background:var(--chip)"><b>Singapore context</b></td></tr>
+<tr><td class="k">MAS TRM Guidelines</td><td>Regulatory (financial)</td><td>Technology risk management expectations for financial institutions</td><td>Bank and fintech environments</td><td class="stars">★★</td></tr>
+<tr><td class="k">PDPA</td><td>Privacy law</td><td>Personal data protection obligations, including breach notification</td><td>Incidents involving personal data</td><td class="stars">★</td></tr>
+<tr><td class="k">CSA Cyber Essentials / Cyber Trust mark; CCoP</td><td>National schemes</td><td>Cyber Security Agency certification marks; Code of Practice for critical information infrastructure</td><td>Local enterprise and CII customers</td><td class="stars">★</td></tr>
+</tbody></table></div>
+</section>
+
+<!-- 6 -->
+<section id="shared">
+<h2>6 · Shared responsibility: who secures what</h2>
+<figure>
+<svg viewBox="0 0 980 300" role="img" aria-label="Shared responsibility across on-premises, IaaS, containers, serverless and SaaS">
+  <text x="160" y="24" class="tb">Layer</text>
+  <text x="300" y="24" text-anchor="middle" class="tb">On-prem</text><text x="440" y="24" text-anchor="middle" class="tb">IaaS (EC2)</text><text x="580" y="24" text-anchor="middle" class="tb">Managed K8s (EKS)</text><text x="720" y="24" text-anchor="middle" class="tb">Serverless</text><text x="860" y="24" text-anchor="middle" class="tb">SaaS</text>
+  <g>
+    <text x="20" y="58" class="t">Data, identities, access</text>
+    <text x="20" y="96" class="t">Application code</text>
+    <text x="20" y="134" class="t">Workload config, images</text>
+    <text x="20" y="172" class="t">OS, runtime, patching</text>
+    <text x="20" y="210" class="t">K8s control plane</text>
+    <text x="20" y="248" class="t">Network, hardware, DC</text>
+  </g>
+  <!-- you = l2 (accent), provider = l1 -->
+  <g>
+    <!-- on-prem: all you -->
+    <rect x="240" y="40" width="120" height="228" rx="6" class="hl"/>
+    <!-- IaaS -->
+    <rect x="380" y="40" width="120" height="152" rx="6" class="hl"/><rect x="380" y="196" width="120" height="72" rx="6" class="l1"/>
+    <!-- EKS -->
+    <rect x="520" y="40" width="120" height="152" rx="6" class="hl"/><rect x="520" y="196" width="120" height="72" rx="6" class="l1"/>
+    <!-- serverless -->
+    <rect x="660" y="40" width="120" height="76" rx="6" class="hl"/><rect x="660" y="120" width="120" height="148" rx="6" class="l1"/>
+    <!-- SaaS -->
+    <rect x="800" y="40" width="120" height="38" rx="6" class="hl"/><rect x="800" y="82" width="120" height="186" rx="6" class="l1"/>
+  </g>
+  <rect x="240" y="280" width="16" height="12" class="hl"/><text x="262" y="291" class="ts">You (customer)</text>
+  <rect x="380" y="280" width="16" height="12" class="l1"/><text x="402" y="291" class="ts">Cloud provider</text>
+  <text x="540" y="291" class="ts">EKS: AWS runs the control plane; you own worker nodes (unless Fargate/Auto Mode), pods, RBAC.</text>
+</svg>
+<figcaption>Simplified. The customer always owns data, identities and access configuration, which is why most cloud breaches are customer-side misconfigurations or stolen credentials, and why CSPM and CIEM exist.</figcaption>
+</figure>
+</section>
+
+<!-- 7 -->
+<section id="threats">
+<h2>7 · Threats: who attacks, and how cloud breaches actually happen</h2>
+<h3>Threat actors</h3>
+<div class="tbl"><table>
+<thead><tr><th>Actor</th><th>Motive</th><th>Typical behaviour</th><th>Cloud example</th></tr></thead>
+<tbody>
+<tr><td class="k">Cybercrime / ransomware groups</td><td>Money</td><td>Initial-access brokers, double extortion (encrypt + leak)</td><td>Steal data from S3, delete backups, demand ransom</td></tr>
+<tr><td class="k">Opportunistic / automated</td><td>Money, at scale</td><td>Scan the internet and GitHub for exposed keys and services</td><td>Leaked access key → cryptominers on large GPU instances within minutes</td></tr>
+<tr><td class="k">Nation-state (APT)</td><td>Espionage, disruption</td><td>Patient, stealthy, custom tooling, supply-chain attacks</td><td>Abuse identity federation or OAuth apps to read mail and data quietly</td></tr>
+<tr><td class="k">Insider</td><td>Grievance, money, mistake</td><td>Legitimate access used wrongly; accidental exposure</td><td>Engineer copies production data to a personal bucket</td></tr>
+<tr><td class="k">Hacktivist</td><td>Ideology</td><td>DDoS, defacement, leaks</td><td>DDoS against a public API</td></tr>
+</tbody></table></div>
+
+<h3>Common cloud attack patterns</h3>
+<div class="tbl"><table>
+<thead><tr><th>Pattern</th><th>How it happens</th><th>Signals that catch it</th><th>Prevention</th></tr></thead>
+<tbody>
+<tr><td class="k">Credential compromise</td><td>Access key in a public repo, phished SSO session, token stolen from a pod or laptop</td><td>GuardDuty (unusual API calls, credential use from outside AWS), CloudTrail anomalies, CDR identity alerts</td><td>No long-lived keys; SSO + MFA; IMDSv2; secret scanning</td></tr>
+<tr><td class="k">Misconfiguration exposure</td><td>Public bucket, open security group, public snapshot, exposed dashboard</td><td>CSPM, Macie, attack-surface scans</td><td>Guardrails (SCPs, Block Public Access), IaC scanning</td></tr>
+<tr><td class="k">Exploiting internet-facing software</td><td>Unpatched web app or VPN appliance; injection; deserialisation</td><td>WAF logs, runtime sensor (web server spawns a shell), EDR</td><td>Patching ranked by exposure, WAF, least-privilege runtime</td></tr>
+<tr><td class="k">Cryptojacking</td><td>Any of the above, then run miners</td><td>Runtime (known miner binaries, mining-pool connections), cost anomaly, GuardDuty</td><td>Quotas, egress control, runtime blocking</td></tr>
+<tr><td class="k">Container / K8s compromise</td><td>Vulnerable image, privileged pod, exposed dashboard or kubelet, stolen SA token</td><td>Runtime sensor (shell, escape attempts, token reads), K8s audit logs</td><td>Pod Security restricted, admission control, NetworkPolicy</td></tr>
+<tr><td class="k">Supply chain</td><td>Malicious package, compromised CI action, backdoored upstream</td><td>Runtime (unexpected outbound connections from build or app), SCA alerts</td><td>Pinning, SBOM, signing, CI egress control, provenance</td></tr>
+<tr><td class="k">Data exfiltration / ransomware</td><td>After access: copy data out, or encrypt/delete it</td><td>Unusual data-transfer volume, <code>GetObject</code> spikes, KMS key-policy changes, backup deletion</td><td>Encryption with tight key policies, immutable backups, egress limits</td></tr>
+<tr><td class="k">Defence evasion</td><td>Stop CloudTrail, delete logs, disable GuardDuty</td><td>Alerts on <code>StopLogging</code> / <code>DeleteTrail</code>, org-level trails</td><td>SCPs that forbid disabling security services</td></tr>
+<tr><td class="k">AI-specific</td><td>Prompt injection, data leakage through the model, agent tool abuse</td><td>Agent traces (Langfuse), AI-DR, guardrail logs</td><td>Least-privilege tools, human approval, input/output guardrails</td></tr>
+</tbody></table></div>
+</section>
+
+<!-- 8 -->
+<section id="attack">
+<h2>8 · An attack, step by step (MITRE ATT&amp;CK tactics)</h2>
+<p class="lead">A realistic cloud intrusion walked through the 14 ATT&amp;CK tactics. Practise telling this story with "what would fire, and what I'd do".</p>
+<figure>
+<svg viewBox="0 0 980 170" role="img" aria-label="The 14 MITRE ATT&amp;CK enterprise tactics in order">
+  <g font-family="system-ui,sans-serif">
+    <rect x="10" y="10" width="130" height="64" rx="8" class="l1"/><text x="75" y="38" text-anchor="middle" class="t">Reconnaissance</text><text x="75" y="58" text-anchor="middle" class="ts">1</text>
+    <rect x="148" y="10" width="130" height="64" rx="8" class="l1"/><text x="213" y="38" text-anchor="middle" class="t">Resource Dev.</text><text x="213" y="58" text-anchor="middle" class="ts">2</text>
+    <rect x="286" y="10" width="130" height="64" rx="8" class="l2"/><text x="351" y="38" text-anchor="middle" class="t">Initial Access</text><text x="351" y="58" text-anchor="middle" class="ts">3</text>
+    <rect x="424" y="10" width="130" height="64" rx="8" class="l2"/><text x="489" y="38" text-anchor="middle" class="t">Execution</text><text x="489" y="58" text-anchor="middle" class="ts">4</text>
+    <rect x="562" y="10" width="130" height="64" rx="8" class="l2"/><text x="627" y="38" text-anchor="middle" class="t">Persistence</text><text x="627" y="58" text-anchor="middle" class="ts">5</text>
+    <rect x="700" y="10" width="130" height="64" rx="8" class="l3"/><text x="765" y="38" text-anchor="middle" class="t">Privilege Esc.</text><text x="765" y="58" text-anchor="middle" class="ts">6</text>
+    <rect x="838" y="10" width="132" height="64" rx="8" class="l3"/><text x="904" y="38" text-anchor="middle" class="t">Defense Evasion</text><text x="904" y="58" text-anchor="middle" class="ts">7</text>
+    <rect x="10" y="94" width="130" height="64" rx="8" class="l3"/><text x="75" y="122" text-anchor="middle" class="t">Credential Access</text><text x="75" y="142" text-anchor="middle" class="ts">8</text>
+    <rect x="148" y="94" width="130" height="64" rx="8" class="l4"/><text x="213" y="122" text-anchor="middle" class="t">Discovery</text><text x="213" y="142" text-anchor="middle" class="ts">9</text>
+    <rect x="286" y="94" width="130" height="64" rx="8" class="l4"/><text x="351" y="122" text-anchor="middle" class="t">Lateral Movement</text><text x="351" y="142" text-anchor="middle" class="ts">10</text>
+    <rect x="424" y="94" width="130" height="64" rx="8" class="l4"/><text x="489" y="122" text-anchor="middle" class="t">Collection</text><text x="489" y="142" text-anchor="middle" class="ts">11</text>
+    <rect x="562" y="94" width="130" height="64" rx="8" class="l5"/><text x="627" y="122" text-anchor="middle" class="t">Command &amp; Control</text><text x="627" y="142" text-anchor="middle" class="ts">12</text>
+    <rect x="700" y="94" width="130" height="64" rx="8" class="l5"/><text x="765" y="122" text-anchor="middle" class="t">Exfiltration</text><text x="765" y="142" text-anchor="middle" class="ts">13</text>
+    <rect x="838" y="94" width="132" height="64" rx="8" class="hl"/><text x="904" y="122" text-anchor="middle" class="t">Impact</text><text x="904" y="142" text-anchor="middle" class="ts">14</text>
+  </g>
+</svg>
+<figcaption>Attackers don't move strictly left to right, but the tactics give you a shared language for "how far did they get?"</figcaption>
+</figure>
+<div class="tbl"><table>
+<thead><tr><th>#</th><th>Tactic</th><th>In this story</th><th>What could catch it</th><th>Your response</th></tr></thead>
+<tbody>
+<tr><td>1–2</td><td>Recon / Resource development</td><td>Attacker scans for exposed services; sets up a C2 server and mining pool account</td><td>Mostly invisible to you; threat intel later</td><td>—</td></tr>
+<tr><td>3</td><td>Initial Access</td><td>Exploits an unpatched internet-facing web app running in a pod</td><td>WAF logs; a runtime-aware vulnerability tool would have ranked this CVE first (exposed + loaded)</td><td>Confirm exploit path from logs</td></tr>
+<tr><td>4</td><td>Execution</td><td>Web server process spawns <code>sh</code> and runs <code>curl | sh</code></td><td><b>Runtime sensor</b>: shell spawned by web server, download-and-execute</td><td>Triage: is this normal for the app? (usually not)</td></tr>
+<tr><td>5</td><td>Persistence</td><td>Creates a CronJob / new IAM user with access key</td><td>K8s audit log; CloudTrail <code>CreateUser</code>, <code>CreateAccessKey</code></td><td>Inventory everything created after initial access</td></tr>
+<tr><td>6</td><td>Privilege Escalation</td><td>Pod is privileged; mounts host filesystem</td><td>Runtime (container escape indicators); CSPM had flagged the privileged pod</td><td>Treat the node as compromised</td></tr>
+<tr><td>7</td><td>Defense Evasion</td><td>Deletes shell history; tries to stop CloudTrail</td><td>Runtime (log tampering); CloudTrail <code>StopLogging</code> alert</td><td>Escalate severity; check org-level trail is intact</td></tr>
+<tr><td>8</td><td>Credential Access</td><td>Reads SA token; queries IMDS for the node role</td><td>Runtime (token read, IMDS access); GuardDuty if the credentials are used from outside</td><td>Revoke sessions, rotate, block IMDS from pods</td></tr>
+<tr><td>9</td><td>Discovery</td><td>Lists S3 buckets, IAM roles, secrets</td><td>CloudTrail burst of <code>List*</code>/<code>Describe*</code> from a new principal</td><td>Scope what the stolen role could reach</td></tr>
+<tr><td>10</td><td>Lateral Movement</td><td>Assumes a more privileged role; reaches other pods</td><td>CloudTrail <code>AssumeRole</code> chain; NetworkPolicy/mesh denies</td><td>Contain: deny policies on the roles, isolate pods/nodes</td></tr>
+<tr><td>11</td><td>Collection</td><td>Copies customer data into staging bucket</td><td>Macie/DSPM; S3 data events</td><td>Identify exactly which data (needed for PDPA notification)</td></tr>
+<tr><td>12</td><td>Command &amp; Control</td><td>Outbound beacon to attacker server</td><td>Runtime network events, DNS logs, GuardDuty threat intel</td><td>Block egress; collect IOCs</td></tr>
+<tr><td>13</td><td>Exfiltration</td><td>Uploads archive to external storage</td><td>Unusual egress volume, flow logs</td><td>Stop transfer, preserve evidence</td></tr>
+<tr><td>14</td><td>Impact</td><td>Launches miners on GPU instances; deletes backups</td><td>Cost anomaly, GuardDuty crypto findings, Backup events</td><td>Eradicate, recover from immutable backups, post-incident review</td></tr>
+</tbody></table></div>
+<div class="you"><b>Investigation habit:</b> for any alert, work through three things: <em>what evidence</em> you'd pull (runtime events, CloudTrail, K8s audit, flow logs), <em>how you'd scope</em> it (which identity, what it could reach), and <em>how you'd contain</em> without destroying evidence (snapshot before terminate, deny policy before delete).</div>
+</section>
+
+<!-- 9 -->
+<section id="soc">
+<h2>9 · How a SOC / MDR team works</h2>
+<figure>
+<svg viewBox="0 0 980 300" role="img" aria-label="SOC pipeline from telemetry sources to response and lessons learned">
+  <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>
+  <rect x="10" y="20" width="170" height="210" rx="10" class="box"/>
+  <text x="25" y="44" class="tb">Telemetry</text>
+  <text x="25" y="68" class="t">Runtime sensors</text><text x="25" y="88" class="t">Cloud logs (CloudTrail)</text><text x="25" y="108" class="t">K8s audit logs</text><text x="25" y="128" class="t">Network / DNS / flow</text><text x="25" y="148" class="t">Identity provider</text><text x="25" y="168" class="t">Endpoint (EDR)</text><text x="25" y="188" class="t">Posture findings</text>
+  <rect x="210" y="70" width="150" height="110" rx="10" class="box"/>
+  <text x="225" y="96" class="tb">Collect &amp; store</text><text x="225" y="118" class="t">SIEM / data lake</text><text x="225" y="138" class="ts">normalise (OCSF)</text><text x="225" y="156" class="ts">enrich (asset, owner)</text>
+  <rect x="390" y="70" width="150" height="110" rx="10" class="hl"/>
+  <text x="405" y="96" class="tb">Detect</text><text x="405" y="118" class="t">Rules, analytics, ML</text><text x="405" y="138" class="ts">correlate into incidents</text><text x="405" y="156" class="ts">detection engineering</text>
+  <rect x="570" y="40" width="190" height="170" rx="10" class="hl"/>
+  <text x="585" y="64" class="tb">Triage &amp; investigate</text>
+  <text x="585" y="88" class="t">Tier 1: validate alert</text><text x="585" y="108" class="t">Tier 2: investigate, scope</text><text x="585" y="128" class="t">Tier 3: complex incidents,</text><text x="585" y="146" class="t">customer engagement</text><text x="585" y="172" class="ts">← where MDR engineers</text><text x="585" y="190" class="ts">handle escalations</text>
+  <rect x="790" y="70" width="180" height="110" rx="10" class="box"/>
+  <text x="805" y="96" class="tb">Respond</text><text x="805" y="118" class="t">Contain, eradicate</text><text x="805" y="138" class="t">SOAR playbooks</text><text x="805" y="158" class="t">Customer comms</text>
+  <line x1="180" y1="125" x2="206" y2="125" class="ln" marker-end="url(#a2)"/>
+  <line x1="360" y1="125" x2="386" y2="125" class="ln" marker-end="url(#a2)"/>
+  <line x1="540" y1="125" x2="566" y2="125" class="ln" marker-end="url(#a2)"/>
+  <line x1="760" y1="125" x2="786" y2="125" class="ln" marker-end="url(#a2)"/>
+  <path d="M880 180 C880 280 465 280 465 184" class="ln" marker-end="url(#a2)"/>
+  <text x="560" y="272" class="ts">Lessons learned → tune detections, write playbooks, close posture gaps</text>
+  <rect x="390" y="10" width="150" height="40" rx="8" class="l1"/><text x="405" y="35" class="t">Threat intel / research</text>
+  <line x1="465" y1="50" x2="465" y2="66" class="ln" marker-end="url(#a2)"/>
+</svg>
+<figcaption>The feedback loop at the bottom is how detections and playbooks get better over time.</figcaption>
+</figure>
+<div class="grid">
+  <div class="card"><h4>Detection engineering</h4><p>Writing, testing and tuning detection rules as code: version control, test data, false-positive budgets, ATT&amp;CK coverage maps.</p></div>
+  <div class="card"><h4>Threat hunting</h4><p>Proactively searching for attackers that didn't trigger alerts, starting from a hypothesis ("is anyone using IMDS from pods?").</p></div>
+  <div class="card"><h4>Playbook</h4><p>Per scenario: trigger, questions to answer, evidence to collect, containment options, communication, closure criteria.</p></div>
+  <div class="card"><h4>Metrics</h4><p><b>MTTD</b> (time to detect), <b>MTTR</b> (time to respond/remediate), false-positive rate, coverage of ATT&amp;CK techniques.</p></div>
+  <div class="card"><h4>Red / blue / purple</h4><p>Red attacks, blue defends, purple is both together to test and improve detections.</p></div>
+  <div class="card"><h4>Breach &amp; attack simulation (BAS)</h4><p>Tools that safely replay attacker techniques to check detections fire (e.g. Atomic Red Team, Falco event-generator, GuardDuty tester).</p></div>
+</div>
+</section>
+
+<!-- 10 -->
+<section id="vuln">
+<h2>10 · Prioritising vulnerabilities</h2>
+<p class="lead">Every environment has thousands of CVEs. The skill is choosing the few that matter.</p>
+<figure>
+<svg viewBox="0 0 980 340" role="img" aria-label="Vulnerability prioritisation funnel from thousands of CVEs to a handful to fix today">
+  <polygon points="40,20 940,20 900,70 80,70" class="l1"/><text x="490" y="51" text-anchor="middle" class="tb">All CVEs found · thousands</text>
+  <polygon points="88,78 892,78 852,128 128,128" class="l2"/><text x="490" y="109" text-anchor="middle" class="tb">Likely exploited · high EPSS or on CISA KEV</text>
+  <polygon points="136,136 844,136 804,186 176,186" class="l3"/><text x="490" y="167" text-anchor="middle" class="tb">Reachable · internet-exposed or attacker-reachable</text>
+  <polygon points="184,194 796,194 756,244 224,244" class="l4"/><text x="490" y="225" text-anchor="middle" class="tb">In use · package actually loaded at runtime</text>
+  <polygon points="232,252 748,252 708,302 272,302" class="l5"/><text x="490" y="283" text-anchor="middle" class="tb">Big blast radius · reaches admin roles or sensitive data</text>
+  <rect x="380" y="308" width="220" height="28" rx="14" class="hl"/><text x="490" y="327" text-anchor="middle" class="tb">Fix today · a handful</text>
+  <text x="950" y="51" class="ts" text-anchor="end"> </text>
+</svg>
+<figcaption>Each step needs a different signal: scanners (Inspector, Trivy), threat data (EPSS, KEV), exposure analysis (attack-surface / graph), a runtime sensor ("is it in use?"), and identity/data context (CIEM, DSPM).</figcaption>
+</figure>
+<div class="tbl"><table>
+<thead><tr><th>Signal</th><th>What it tells you</th><th>Limitation</th></tr></thead>
+<tbody>
+<tr><td class="k">CVSS</td><td>Severity of the flaw in general (0–10)</td><td>Says nothing about your environment or whether anyone exploits it</td></tr>
+<tr><td class="k">EPSS</td><td>Probability of exploitation in the next 30 days</td><td>Still not about your environment</td></tr>
+<tr><td class="k">CISA KEV</td><td>Known to be exploited in the wild</td><td>Short list; absence doesn't mean safe</td></tr>
+<tr><td class="k">SSVC</td><td>Decision tree: act / attend / track</td><td>Needs your context as input</td></tr>
+<tr><td class="k">Exposure (internet-facing?)</td><td>Can an attacker reach it?</td><td>Needs network and graph analysis</td></tr>
+<tr><td class="k">Runtime reachability (in use?)</td><td>Is the vulnerable package actually loaded or executed?</td><td>Needs a runtime sensor (the pitch of runtime-first CNAPPs)</td></tr>
+<tr><td class="k">Blast radius</td><td>What the workload's identity can reach (data, admin roles)</td><td>Needs CIEM</td></tr>
+</tbody></table></div>
+<div class="you">A good prioritisation combines them: <em>"Critical CVSS, on KEV, in a package that's loaded, on an internet-facing pod whose role can read customer data"</em> is a fix-today. The same CVE in an unused library in an internal batch job can wait.</div>
+</section>
+
+<!-- 11 -->
+<section id="glossary">
+<h2>11 · Glossary of terms not covered on the companion page</h2>
+<div class="grid">
+  <div class="card"><h4>Identity</h4><ul>
+    <li><b>IdP / SSO</b>: one login across apps</li>
+    <li><b>SAML / OIDC / OAuth 2.0</b>: federation protocols (OAuth is authorisation; OIDC adds identity on top)</li>
+    <li><b>MFA / phishing-resistant MFA</b>: FIDO2/passkeys beat SMS and push</li>
+    <li><b>PAM</b>: privileged access management (vaulting, session recording)</li>
+    <li><b>IGA</b>: identity governance (joiner-mover-leaver, access reviews)</li>
+    <li><b>JIT access</b>: temporary elevation instead of standing admin</li>
+  </ul></div>
+  <div class="card"><h4>Network</h4><ul>
+    <li><b>NGFW</b>: firewall with app awareness and IPS</li>
+    <li><b>IDS / IPS</b>: detect / block network attacks</li>
+    <li><b>SASE / SSE</b>: network + security delivered from the cloud</li>
+    <li><b>ZTNA</b>: per-app access replacing VPN</li>
+    <li><b>SWG / CASB</b>: web filtering / SaaS usage control</li>
+    <li><b>NDR</b>: detection from network traffic</li>
+  </ul></div>
+  <div class="card"><h4>Endpoint &amp; workload</h4><ul>
+    <li><b>EPP</b>: prevention (antivirus successor)</li>
+    <li><b>EDR</b>: endpoint detection and response</li>
+    <li><b>MDM</b>: device management</li>
+    <li><b>FIM</b>: file integrity monitoring (e.g. Tripwire)</li>
+    <li><b>Hardening</b>: CIS benchmarks, minimal images</li>
+  </ul></div>
+  <div class="card"><h4>Data</h4><ul>
+    <li><b>DLP</b>: stop sensitive data leaving</li>
+    <li><b>Encryption at rest / in transit</b>: KMS, TLS</li>
+    <li><b>KMS / HSM</b>: key management / hardware key storage</li>
+    <li><b>Tokenisation</b>: replace data with a reference</li>
+    <li><b>Immutable backups</b>: can't be deleted by an attacker (vault lock)</li>
+  </ul></div>
+  <div class="card"><h4>SecOps</h4><ul>
+    <li><b>UEBA</b>: behaviour baselines for users/entities</li>
+    <li><b>TI / CTI</b>: threat intelligence</li>
+    <li><b>Triage</b>: decide if an alert is real and how urgent</li>
+    <li><b>Containment</b>: limit spread without destroying evidence</li>
+    <li><b>Forensics</b>: preserve and analyse evidence (snapshots, memory)</li>
+    <li><b>Chain of custody</b>: evidence handling record</li>
+  </ul></div>
+  <div class="card"><h4>Testing &amp; GRC</h4><ul>
+    <li><b>Pentest / red team</b>: scoped test / full adversary simulation</li>
+    <li><b>Bug bounty</b>: paid external researchers</li>
+    <li><b>Policy / standard / procedure</b>: why / what / how</li>
+    <li><b>Control</b>: a safeguard that reduces risk</li>
+    <li><b>Risk register</b>: tracked risks with owners</li>
+    <li><b>Attestation</b>: audited evidence (SOC 2 report)</li>
+  </ul></div>
+</div>
+</section>
+
+<!-- 12 -->
+<section id="practice">
+<h2>12 · Practice: hands-on resources</h2>
+<div class="tbl"><table>
+<thead><tr><th>Resource</th><th>What you practise</th><th>Why it helps</th></tr></thead>
+<tbody>
+<tr><td class="k">flAWS / flAWS2 (flaws.cloud)</td><td>Classic AWS misconfiguration and credential mistakes, from attacker and defender side</td><td>Builds the attacker's view of AWS quickly</td></tr>
+<tr><td class="k">CloudGoat (Rhino Security Labs)</td><td>Deliberately vulnerable AWS scenarios deployed with Terraform</td><td>Attack chains you can then investigate in CloudTrail</td></tr>
+<tr><td class="k">Kubernetes Goat</td><td>Vulnerable Kubernetes scenarios</td><td>Container escape, RBAC abuse, SSRF to metadata</td></tr>
+<tr><td class="k">AWS incident response playbooks (aws-samples on GitHub)</td><td>Ready-made playbooks for compromised credentials, S3 exposure, etc.</td><td>A template for writing your own playbooks</td></tr>
+<tr><td class="k">MITRE ATT&amp;CK Navigator</td><td>Map detections and attacks onto the matrix</td><td>Show detection coverage visually</td></tr>
+<tr><td class="k">Atomic Red Team / Falco event-generator</td><td>Safely trigger specific techniques</td><td>Test that detections actually fire</td></tr>
+<tr><td class="k">Sigma rules repository</td><td>Read hundreds of real detection rules</td><td>Fastest way to learn what "good detection logic" looks like</td></tr>
+</tbody></table></div>
+<div class="note">Only run attack tooling against environments you own or purpose-built labs. Never against employer or customer systems without written authorisation.</div>
+</section>
+
+<footer>
+<h3>Sources and references</h3>
+<ul>
+<li><a href="https://www.nist.gov/cyberframework">NIST Cybersecurity Framework 2.0</a> · <a href="https://csrc.nist.gov/pubs/sp/800/61/r3/final">NIST SP 800-61 Rev. 3 (incident response)</a> · <a href="https://csrc.nist.gov/pubs/sp/800/207/final">NIST SP 800-207 (Zero Trust)</a></li>
+<li><a href="https://attack.mitre.org/">MITRE ATT&amp;CK</a> · <a href="https://atlas.mitre.org/">MITRE ATLAS</a> · <a href="https://github.com/SigmaHQ/sigma">Sigma</a></li>
+<li><a href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a> · <a href="https://owasp.org/API-Security/">OWASP API Security Top 10</a> · <a href="https://genai.owasp.org/">OWASP GenAI / LLM Top 10</a></li>
+<li><a href="https://www.cisecurity.org/controls">CIS Controls</a> · <a href="https://www.cisecurity.org/cis-benchmarks">CIS Benchmarks</a></li>
+<li><a href="https://docs.aws.amazon.com/security-ir/latest/userguide/security-incident-response-guide.html">AWS Security Incident Response Guide</a> · <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/welcome.html">AWS Security Reference Architecture</a> · <a href="https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html">Well-Architected Security Pillar</a></li>
+<li><a href="https://www.mas.gov.sg/regulation/guidelines/technology-risk-management-guidelines">MAS Technology Risk Management Guidelines</a> · <a href="https://www.csa.gov.sg/">Cyber Security Agency of Singapore</a></li>
+<li><a href="http://flaws.cloud/">flAWS</a> · <a href="https://github.com/RhinoSecurityLabs/cloudgoat">CloudGoat</a> · <a href="https://madhuakula.com/kubernetes-goat/">Kubernetes Goat</a> · <a href="https://github.com/redcanaryco/atomic-red-team">Atomic Red Team</a></li>
+</ul>
+</footer>
+</div>
+<script>
+(function(){
+  var root=document.documentElement, key='csmap-theme';
+  try{var s=localStorage.getItem(key); if(s) root.setAttribute('data-theme',s);}catch(e){}
+  document.getElementById('tt').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur? cur==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=dark?'light':'dark'; root.setAttribute('data-theme',next);
+    try{localStorage.setItem(key,next);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
