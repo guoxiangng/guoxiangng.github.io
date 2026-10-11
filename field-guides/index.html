@@ -36,6 +36,8 @@
       margin-bottom: 0.3rem;
     }
     .wip p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+    .group__title { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.9rem, 4.5vw, 2.6rem); margin: 0 0 .4rem; }
+    .group__lead { color: var(--ink-soft); max-width: var(--measure); margin: 0 0 2.6rem; }
     .guide { margin: 0 0 clamp(3.5rem, 8vw, 5.5rem); }
     .guide__kicker {
       display: inline-block;
@@ -109,17 +111,32 @@
       <h1 class="section__title">Field Guides</h1>
       <p class="section__lead">
         Maps and mental models I make while learning a field. Each one tries to put a whole
-        area on one page, so the pieces make sense in relation to each other. The first two
-        are about cloud security.
+        area on one page, so the pieces make sense in relation to each other. Grouped by field;
+        the first is cloud security.
       </p>
 
       <div class="wip" role="note">
         <span class="wip__title">🚧 Work in progress</span>
-        <p>Both maps are v0.1 drafts. I'm a platform architect learning security, and these are
+        <p>All three are v0.1 drafts. I'm a platform architect learning security, and these are
         being reviewed by security practitioners. Expect mistakes and missing pieces. Corrections
         are welcome: <a href="https://www.linkedin.com/in/guoxiangng/" target="_blank" rel="noopener">LinkedIn</a>
         or <a href="mailto:guoxiang231@gmail.com">email</a>.</p>
       </div>
+
+      <h2 class="group__title" id="cloud-security">Cloud Security</h2>
+      <p class="group__lead">One set: a guide that explains the field, and two one-page maps that summarise it from different angles: <em>what</em> you defend and do about it, and <em>when</em> things go wrong as a change reaches production.</p>
+
+      <article class="guide" id="landscape">
+        <span class="guide__kicker">Start here · Work in progress · v0.1</span>
+        <h2 class="guide__title">The Security Landscape Guide</h2>
+        <p>The reference behind both maps, for anyone crossing into security from cloud or platform work:
+        core ideas, the layers you defend, how security teams and roles divide the work, the frameworks
+        people actually use, the threats, one cloud attack walked through all 14 MITRE ATT&amp;CK tactics,
+        how a SOC works, and how to prioritise vulnerabilities.</p>
+        <div class="guide__links">
+          <a class="btn btn--primary" href="security-landscape.html">Read the guide</a>
+        </div>
+      </article>
 
       <article class="guide" id="lifecycle">
         <span class="guide__kicker">Work in progress · v0.1</span>
@@ -172,17 +189,7 @@
         by Sounil Yu (OWASP). Columns are the NIST CSF 2.0 functions. Rows, cell contents and annotations are original to this map.</p>
       </article>
 
-      <article class="guide" id="landscape">
-        <span class="guide__kicker">Work in progress · v0.1</span>
-        <h2 class="guide__title">The Security Landscape Guide</h2>
-        <p>The reference behind both maps, for anyone crossing into security from cloud or platform work:
-        core ideas, the layers you defend, how security teams and roles divide the work, the frameworks
-        people actually use, the threats, one cloud attack walked through all 14 MITRE ATT&amp;CK tactics,
-        how a SOC works, and how to prioritise vulnerabilities.</p>
-        <div class="guide__links">
-          <a class="btn btn--primary" href="security-landscape.html">Read the guide</a>
-        </div>
-      </article>
+
 
       <p class="section__lead">More to come from other fields: platform architecture, observability, AI platforms.</p>
     </section>
